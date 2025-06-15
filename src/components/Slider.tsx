@@ -85,9 +85,12 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
           const isFar = !isActive && !isNext && !isPrev;
 
           return (
-            <Link to={`/quiz/$id`} params={{ id: quiz.id.toString() }} key={quiz.id}>
+            <Link
+              to={`/quiz/$id`}
+              params={{ id: quiz.id.toString() }}
+              key={`${quiz.id}-${index}`}
+            >
               <div
-                key={`${quiz.id}-${index}`}
                 className={`absolute top-0 left-0 h-full w-full transition-all duration-500 ease-in-out ${
                   isActive ? "z-10" : "z-0"
                 }`}

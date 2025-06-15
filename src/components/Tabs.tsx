@@ -89,8 +89,8 @@ export default function Tabs() {
 
       <div className="my-4 grid grid-cols-2 gap-4">
         {filteredQuizes.length > 0 ? (
-          filteredQuizes.map((quiz) => (
-            <Link to={`/quiz/$id`} params={{ id: quiz.id.toString() }} key={quiz.id}>
+          filteredQuizes.map((quiz, index) => (
+            <Link to={`/quiz/$id`} params={{ id: quiz.id.toString() }} key={index}>
               <div
                 style={{
                   borderTop: "4px solid white",
