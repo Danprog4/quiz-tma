@@ -310,9 +310,6 @@ function RouteComponent() {
         <section>
           <div className="relative w-full border-2 border-white bg-[#C0C0C0]">
             <div className="flex h-6 w-full items-center justify-between bg-[#010089] py-4">
-              <p className="text-md px-2 py-1 uppercase">
-                {quiz?.categories.map((cat) => cat.name).join(", ")}
-              </p>
               <svg
                 className="mx-2"
                 width="55"
