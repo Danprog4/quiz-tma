@@ -1,5 +1,10 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { createFileRoute, useParams, useRouter } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createFileRoute,
+  useNavigate,
+  useParams,
+  useRouter,
+} from "@tanstack/react-router";
 import { useState } from "react";
 import { Coin } from "~/components/Coin";
 import CustomAudioPlayer from "~/components/CustomAudioPlayer";
@@ -45,6 +50,7 @@ function RouteComponent() {
   const params = useParams({ from: "/quiz/$id" });
   const id = params.id as string;
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
   const { user } = useUser();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -53,6 +59,7 @@ function RouteComponent() {
   const [isMainVisible, setMainVisible] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
 
@@ -124,12 +131,16 @@ function RouteComponent() {
         quizId: Number(id),
         score: score,
       });
+      queryClient.setQueryData(trpc.main.getUserResults.queryKey(), (old: any) => ({
+        ...old,
+        totalScore: old.totalScore + score,
+      }));
       setIsFinished(true);
     }
   };
 
   const handleBack = () => {
-    router.navigate({ to: "/" });
+    navigate({ to: "/" });
   };
 
   const renderMediaContent = () => {
@@ -254,8 +265,11 @@ function RouteComponent() {
                   <Coin />
                 </div>
 
-                <button className="mb-1 w-full bg-[#0100BE] px-4 py-3 text-lg text-white">
-                  <a href="/">НА ГЛАВНУЮ</a>
+                <button
+                  onClick={() => navigate({ to: "/" })}
+                  className="mb-1 w-full bg-[#0100BE] px-4 py-3 text-lg text-white"
+                >
+                  НА ГЛАВНУЮ
                 </button>
 
                 <button
