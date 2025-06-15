@@ -77,16 +77,21 @@ function RouteComponent() {
     }
   };
 
-  const { data: userResults } = useQuery(trpc.main.getUserResults.queryOptions());
+  const { data: userQuizCoins } = useQuery(
+    trpc.main.getUserResult.queryOptions({ quizId: Number(id) }),
+  );
 
   const createResultMutation = useMutation(trpc.results.createResult.mutationOptions());
 
   const { data: quiz } = useQuery(trpc.quizzes.getById.queryOptions({ id: Number(id) }));
 
+  const userQuizResult = userQuizCoins?.score || 0 / (quiz?.questions.length || 0);
+
   const { data: questions } = useQuery(
     trpc.quizzes.getQuestions.queryOptions({ quizId: Number(id) }),
   );
 
+  console.log(quiz?.questions, questions, "questions");
   const handleStart = async () => {
     try {
       setMainVisible(false);
@@ -127,7 +132,7 @@ function RouteComponent() {
       setIsCorrect(null);
       setAnswerSubmitted(false);
     } else {
-      queryClient.setQueryData(trpc.main.getUserResults.queryKey(), (old: any) => ({
+      queryClient.setQueryData(trpc.main.getUser.queryKey(), (old: any) => ({
         ...old,
         totalScore: old.totalScore + score,
       }));
@@ -516,7 +521,9 @@ function RouteComponent() {
                     fill="white"
                   />
                 </svg>
-                <p className="text-lg text-black">ПРОЙДЕНО 0/{questions?.length || 0}</p>
+                <p className="text-lg text-black">
+                  ПРОЙДЕНО {userQuizResult || 0}/{questions?.length || 0}
+                </p>
               </div>
 
               <button

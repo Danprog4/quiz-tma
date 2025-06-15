@@ -32,14 +32,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await queryClient.prefetchQuery(
           trpc.quizzes.getById.queryOptions({ id: quiz.id }),
         );
+        await queryClient.prefetchQuery(
+          trpc.quizzes.getQuestions.queryOptions({ quizId: quiz.id }),
+        );
       });
       await Promise.all(prefetchQuizPromises);
 
       await queryClient.prefetchQuery(trpc.main.getUserResults.queryOptions());
+
+      setIsFinished(true);
     } catch (error) {
       console.error("Error prefetching data:", error);
-    } finally {
-      setIsFinished(true);
     }
   };
 
@@ -70,9 +73,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         startParam,
       });
     }
-  }, [initData, startParam, loginMutation.isPending]);
+  }, [initData, startParam]);
 
-  if (!isFinished) {
+  if (!isFinished && loginMutation.isPending) {
     return <FullPageSpinner />;
   }
 

@@ -27,6 +27,17 @@ export const router = {
     return results;
   }),
 
+  getUserResult: procedure
+    .input(z.object({ quizId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.userId;
+      const result = await db.query.quizResultsTable.findFirst({
+        where: (quizResults) =>
+          eq(quizResults.userId, userId) && eq(quizResults.quizId, input.quizId),
+      });
+      return result;
+    }),
+
   createUserResult: procedure
     .input(
       z.object({
