@@ -21,12 +21,12 @@ function RouteComponent() {
   };
 
   return (
-    <div className="relative h-screen w-full bg-black text-white">
-      <div className="pointer-events-none absolute inset-0 z-10 w-full">
+    <div className="relative min-h-screen w-screen overflow-x-hidden bg-black text-white">
+      <div className="pointer-events-none absolute inset-0 z-10">
         <img
           src="/telek.png"
           alt="Decorative overlay"
-          className="object-cover opacity-35"
+          className="h-full w-full object-cover opacity-35"
         />
       </div>
       <header className="mx-4 flex items-center justify-between py-5 text-white">
