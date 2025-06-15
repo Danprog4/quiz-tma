@@ -127,14 +127,15 @@ function RouteComponent() {
       setIsCorrect(null);
       setAnswerSubmitted(false);
     } else {
-      createResultMutation.mutate({
-        quizId: Number(id),
-        score: score,
-      });
       queryClient.setQueryData(trpc.main.getUserResults.queryKey(), (old: any) => ({
         ...old,
         totalScore: old.totalScore + score,
       }));
+      createResultMutation.mutate({
+        quizId: Number(id),
+        score: score,
+      });
+
       setIsFinished(true);
     }
   };
