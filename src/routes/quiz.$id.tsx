@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, useParams, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { Coin } from "~/components/Coin";
 import CustomAudioPlayer from "~/components/CustomAudioPlayer";
 import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
 import { useUser } from "~/hooks/useUser";
@@ -192,7 +193,7 @@ function RouteComponent() {
           </div>
           <div className="flex">
             <p className="mr-2">{user?.totalScore || 0}</p>
-            <div className="h-6 w-6 rounded-full bg-yellow-400"></div>
+            <Coin />
           </div>
         </header>
         <main className={`mx-4 flex flex-col`}>
@@ -250,7 +251,7 @@ function RouteComponent() {
 
                 <div className="flex items-center py-4">
                   <h2 className="mr-1 text-lg text-black">{score}</h2>
-                  <div className="h-6 w-6 rounded-full bg-yellow-400"></div>
+                  <Coin />
                 </div>
 
                 <button className="mb-1 w-full bg-[#0100BE] px-4 py-3 text-lg text-white">
@@ -301,7 +302,7 @@ function RouteComponent() {
         </div>
         <div className="flex">
           <p className="mr-2">{user?.totalScore || 0}</p>
-          <div className="h-6 w-6 rounded-full bg-yellow-400"></div>
+          <Coin />
         </div>
       </header>
 
@@ -467,7 +468,7 @@ function RouteComponent() {
                 <div className="max-h-10 bg-[#CECECE]">
                   <div className="flex items-center px-2 py-2">
                     <p className="mr-2 text-lg text-black">{quiz?.maxScore}</p>
-                    <div className="h-6 w-6 rounded-full bg-yellow-400"></div>
+                    <Coin />
                   </div>
                 </div>
               </div>
