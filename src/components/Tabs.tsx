@@ -100,9 +100,11 @@ export default function Tabs() {
                 }}
                 className="relative h-54 w-full"
               >
-                <div className="h-6 w-full bg-[#010089]">
-                  <p className="px-2 py-1 text-xs uppercase">
-                    {quiz.categories.map((cat: { name: string }) => cat.name).join(", ")}
+                <div className="flex max-h-6 w-full items-center bg-[#010089]">
+                  <p className="px-2 py-2 text-xs uppercase">
+                    {quiz.categories.length > 0
+                      ? quiz.categories[0].name.substring(0, 18)
+                      : ""}
                   </p>
                 </div>
                 <img
