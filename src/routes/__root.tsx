@@ -5,7 +5,7 @@ import {
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { backButton, init, mockTelegramEnv, swipeBehavior } from "@telegram-apps/sdk";
+import { backButton, init, mockTelegramEnv } from "@telegram-apps/sdk";
 import { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { useEffect } from "react";
 import { AuthProvider } from "~/components/AuthProvider";
@@ -87,12 +87,12 @@ function RootComponent() {
 
     backButton.mount();
 
-    if (swipeBehavior.mount.isAvailable()) {
-      swipeBehavior.mount();
-      swipeBehavior.isMounted();
-      swipeBehavior.disableVertical();
-      swipeBehavior.isVerticalEnabled();
-    }
+    // if (swipeBehavior.mount.isAvailable()) {
+    //   swipeBehavior.mount();
+    //   swipeBehavior.isMounted();
+    //   swipeBehavior.disableVertical();
+    //   swipeBehavior.isVerticalEnabled();
+    // }
 
     // if (viewport.expand.isAvailable()) {
     //   viewport.expand();
