@@ -12,6 +12,17 @@ export const Navbar = () => {
   const pathname = useLocation();
   const navigate = useNavigate();
   const [active, setActive] = useState<string>("main");
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShow(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!show) return null;
 
   useEffect(() => {
     if (pathname.pathname === "/") {
