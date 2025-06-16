@@ -17,12 +17,10 @@ export const Navbar = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(true);
-    }, 500);
+    }, 10);
 
     return () => clearTimeout(timer);
   }, []);
-
-  if (!show) return null;
 
   useEffect(() => {
     if (pathname.pathname === "/") {
@@ -35,6 +33,8 @@ export const Navbar = () => {
       setActive("leaders");
     }
   }, [pathname]);
+
+  if (!show) return null;
 
   console.log(pathname.pathname);
   console.log(active);
