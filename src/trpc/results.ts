@@ -53,6 +53,11 @@ export const resultsRouter = {
           })
           .returning();
 
+        await db
+          .update(usersTable)
+          .set({ totalScore: sql`${usersTable.totalScore} + ${input.score}` })
+          .where(eq(usersTable.id, ctx.userId));
+
         return;
       }
 
@@ -69,15 +74,18 @@ export const resultsRouter = {
             ),
           )
           .returning();
+
+        const scoreDifference = input.score - oldResult.score;
+
+        await db
+          .update(usersTable)
+          .set({ totalScore: sql`${usersTable.totalScore} + ${scoreDifference}` })
+          .where(eq(usersTable.id, ctx.userId));
+
+        return;
       }
 
-      const newScore = input.score - oldResult.score;
-
-      await db
-        .update(usersTable)
-        .set({ totalScore: sql`${usersTable.totalScore} + ${newScore}` })
-        .where(eq(usersTable.id, ctx.userId));
-
+      // Если oldResult.score >= input.score, не обновляем ничего
       return;
     }),
 } satisfies TRPCRouterRecord;

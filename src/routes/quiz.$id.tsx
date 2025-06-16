@@ -118,12 +118,13 @@ function RouteComponent() {
 
   const handleRestart = async () => {
     try {
-      setMainVisible(true);
+      setMainVisible(false);
       setIsFinished(false);
       setTotalQuestions(questions?.length || 0);
       setSelectedAnswer(null);
       setIsCorrect(null);
       setCurrentQuestionIndex(0);
+      setAnswerSubmitted(false);
       setScore(0);
     } catch (err) {
       console.error(err);
@@ -144,20 +145,27 @@ function RouteComponent() {
       setIsCorrect(null);
       setAnswerSubmitted(false);
     } else {
-      const old = userQuizCoins;
-      const newScore =
-        old?.score && old.score > score ? old.score : score - (old?.score || 0);
+      const oldScore = userQuizCoins?.score || 0;
+
+      // Если старый результат больше или равен новому, не обновляем ничего
+      if (oldScore >= score) {
+        setIsFinished(true);
+        return;
+      }
+
+      // Если новый результат лучше, обновляем и прибавляем только разницу
+      const scoreDifference = score - oldScore;
+
       queryClient.setQueryData(
         trpc.results.getUserResults.queryKey({ userId: user?.id }),
         (old: any) => ({
           ...old,
-          score: newScore,
+          score: score,
         }),
       );
       queryClient.setQueryData(trpc.main.getUser.queryKey(), (old: any) => ({
         ...old,
-        totalScore:
-          newScore === old.totalScore ? old.totalScore : old.totalScore + newScore,
+        totalScore: old.totalScore + scoreDifference,
       }));
       createResultMutation.mutate({
         quizId: Number(id),
