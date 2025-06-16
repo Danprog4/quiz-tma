@@ -6,42 +6,13 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { hapticFeedback } from "@telegram-apps/sdk";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Coin } from "~/components/Coin";
 import CustomAudioPlayer from "~/components/CustomAudioPlayer";
 import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
 import { FullPageSpinner } from "~/components/Spinner";
 import { useUser } from "~/hooks/useUser";
 import { useTRPC } from "~/trpc/init/react";
-
-type QuizBasic = {
-  id: number;
-  title: string;
-  description: string;
-  image_url: string;
-  is_popular?: boolean;
-  is_new?: boolean;
-  max_score: number;
-  collaborator_name?: string;
-  collaborator_logo?: string;
-  collaborator_link?: string;
-  categories: { name: string; id: number; quiz_id: number }[];
-};
-
-type Question = {
-  id: number;
-  text: string;
-  question_type: string;
-  presentation_type: string;
-  media_url: string | null;
-  explanation: string;
-  points: number;
-  answers: {
-    id: number;
-    text: string;
-    is_correct: boolean;
-  }[];
-};
 
 export const Route = createFileRoute("/quiz/$id")({
   component: RouteComponent,
@@ -61,6 +32,7 @@ function RouteComponent() {
   const [isMainVisible, setMainVisible] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
+  const [userQuizResult, setUserQuizResult] = useState(0);
   const navigate = useNavigate();
 
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
@@ -93,7 +65,11 @@ function RouteComponent() {
     ? quiz.maxScore! / quiz.questions.length
     : 0;
 
-  const userQuizResult = userQuizCoins?.score! / questionPrice!;
+  useEffect(() => {
+    const userQuizResult = userQuizCoins ? userQuizCoins?.score! / questionPrice! : 0;
+    setUserQuizResult(userQuizResult);
+    console.log(userQuizResult, "userQuizResult useEffect");
+  }, [userQuizCoins, questionPrice]);
 
   console.log(userQuizResult, "userQuizResult");
 
@@ -156,9 +132,21 @@ function RouteComponent() {
 
       // Если новый результат лучше, обновляем и прибавляем только разницу
       const scoreDifference = score - oldScore;
+      if (!oldScore) {
+        queryClient.setQueryData(
+          trpc.results.getUserResults.queryKey({ userId: user?.id }),
+          (old: any) => [
+            ...(old || []),
+            {
+              quiz_id: Number(id),
+              score: score,
+            },
+          ],
+        );
+      }
 
       queryClient.setQueryData(
-        trpc.results.getUserResults.queryKey({ userId: user?.id }),
+        trpc.main.getUserResult.queryKey({ quizId: Number(id) }),
         (old: any) => ({
           ...old,
           score: score,
@@ -168,6 +156,12 @@ function RouteComponent() {
         ...old,
         totalScore: old.totalScore + scoreDifference,
       }));
+      queryClient.invalidateQueries({
+        queryKey: trpc.results.getUserResults.queryKey({ userId: user?.id }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: trpc.main.getUserResult.queryKey({ quizId: Number(id) }),
+      });
       createResultMutation.mutate({
         quizId: Number(id),
         score: score,
@@ -212,7 +206,7 @@ function RouteComponent() {
 
   if (isFinished) {
     return (
-      <div className="relative h-full min-h-screen w-full bg-black text-white">
+      <div className="relative h-full min-h-screen w-full bg-black pb-32 text-white">
         <div className="pointer-events-none absolute inset-0 z-10">
           <img
             src="/telek.png"
@@ -323,7 +317,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="relative h-full min-h-screen w-full bg-black text-white">
+    <div className="relative h-full min-h-screen w-full bg-black pb-32 text-white">
       <div className="pointer-events-none absolute inset-0 z-10">
         <img
           src="/telek.png"
