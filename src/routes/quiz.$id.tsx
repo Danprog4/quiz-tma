@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Coin } from "~/components/Coin";
 import CustomAudioPlayer from "~/components/CustomAudioPlayer";
 import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
+import { FullPageSpinner } from "~/components/Spinner";
 import { useUser } from "~/hooks/useUser";
 import { useTRPC } from "~/trpc/init/react";
 
@@ -206,11 +207,7 @@ function RouteComponent() {
   };
 
   if (!quiz) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-black text-white">
-        Quiz not found
-      </div>
-    );
+    return <FullPageSpinner />;
   }
 
   if (isFinished) {

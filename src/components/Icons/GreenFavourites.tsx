@@ -1,0 +1,16 @@
+export const GreenFavourites = () => {
+  return (
+    <svg
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M16.5 9V8H15.5V6H14.5V4H13.5V2H11.5V4H10.5V6H9.5V8H8.5V9H2.5V11H3.5V12H4.5V13H5.5V14H6.5V18H5.5V20H4.5V22H7.5V21H9.5V20H10.5V19H14.5V20H15.5V21H17.5V22H20.5V20H19.5V18H18.5V14H19.5V13H20.5V12H21.5V11H22.5V9H16.5ZM16.5 12V13H15.5V15H16.5V17H14.5V16H10.5V17H8.5V15H9.5V13H8.5V12H7.5V11H10.5V10H11.5V8H13.5V10H14.5V11H17.5V12H16.5Z"
+        fill="#6CED52"
+      />
+    </svg>
+  );
+};
