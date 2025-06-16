@@ -28,7 +28,7 @@ export const Navbar = () => {
   console.log(pathname.pathname);
   console.log(active);
   return (
-    <div className="fixed right-0 bottom-0 left-0 z-1 flex items-center justify-between bg-black p-4">
+    <div className="fixed right-0 bottom-0 left-0 z-1 flex items-center justify-between border-t border-[#474747] bg-black p-4">
       <div
         className="flex flex-col items-center justify-center gap-1"
         onClick={() => navigate({ to: "/" })}
