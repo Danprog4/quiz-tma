@@ -21,7 +21,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="relative min-h-screen w-screen overflow-x-hidden bg-black text-white">
+    <div className="relative min-h-screen w-screen overflow-x-hidden bg-black pb-32 text-white">
       <div className="pointer-events-none absolute inset-0 z-10">
         <img
           src="/telek.png"

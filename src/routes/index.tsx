@@ -42,7 +42,7 @@ function Home() {
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
 
   return (
-    <div className="relative min-h-screen w-full bg-black text-white">
+    <div className="relative min-h-screen w-full bg-black pb-32 text-white">
       <div className="pointer-events-none absolute inset-0 z-10">
         <img
           src="/telek.png"
