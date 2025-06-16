@@ -5,6 +5,7 @@ import {
   useParams,
   useRouter,
 } from "@tanstack/react-router";
+import { hapticFeedback } from "@telegram-apps/sdk";
 import { useState } from "react";
 import { Coin } from "~/components/Coin";
 import CustomAudioPlayer from "~/components/CustomAudioPlayer";
@@ -72,8 +73,10 @@ function RouteComponent() {
     if (selected?.isCorrect) {
       setIsCorrect(true);
       setScore((prev) => prev + (currentQuestion.points || 0));
+      hapticFeedback.notificationOccurred("success");
     } else {
       setIsCorrect(false);
+      hapticFeedback.notificationOccurred("error");
     }
   };
 
