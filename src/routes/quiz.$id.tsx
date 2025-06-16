@@ -132,18 +132,6 @@ function RouteComponent() {
 
       // Если новый результат лучше, обновляем и прибавляем только разницу
       const scoreDifference = score - oldScore;
-      if (!oldScore) {
-        queryClient.setQueryData(
-          trpc.results.getUserResults.queryKey({ userId: user?.id }),
-          (old: any) => [
-            ...(old || []),
-            {
-              quiz_id: Number(id),
-              score: score,
-            },
-          ],
-        );
-      }
 
       queryClient.setQueryData(
         trpc.main.getUserResult.queryKey({ quizId: Number(id) }),
