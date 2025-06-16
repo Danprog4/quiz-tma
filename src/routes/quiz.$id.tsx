@@ -88,7 +88,15 @@ function RouteComponent() {
 
   const { data: quiz } = useQuery(trpc.quizzes.getById.queryOptions({ id: Number(id) }));
 
-  const userQuizResult = userQuizCoins?.score || 0 / (quiz?.questions.length || 0);
+  const questionPrice = quiz?.questions.length
+    ? quiz.maxScore! / quiz.questions.length
+    : 0;
+
+  const userQuizResult = userQuizCoins?.score! / questionPrice!;
+
+  console.log(userQuizResult, "userQuizResult");
+
+  console.log(questionPrice, "questionPrice");
 
   const { data: questions } = useQuery(
     trpc.quizzes.getQuestions.queryOptions({ quizId: Number(id) }),
@@ -116,6 +124,7 @@ function RouteComponent() {
       setSelectedAnswer(null);
       setIsCorrect(null);
       setCurrentQuestionIndex(0);
+      setScore(0);
     } catch (err) {
       console.error(err);
     }
@@ -135,9 +144,20 @@ function RouteComponent() {
       setIsCorrect(null);
       setAnswerSubmitted(false);
     } else {
+      const old = userQuizCoins;
+      const newScore =
+        old?.score && old.score > score ? old.score : score - (old?.score || 0);
+      queryClient.setQueryData(
+        trpc.results.getUserResults.queryKey({ userId: user?.id }),
+        (old: any) => ({
+          ...old,
+          score: newScore,
+        }),
+      );
       queryClient.setQueryData(trpc.main.getUser.queryKey(), (old: any) => ({
         ...old,
-        totalScore: old.totalScore + score,
+        totalScore:
+          newScore === old.totalScore ? old.totalScore : old.totalScore + newScore,
       }));
       createResultMutation.mutate({
         quizId: Number(id),
@@ -147,6 +167,8 @@ function RouteComponent() {
       setIsFinished(true);
     }
   };
+
+  console.log(score, "score");
 
   const handleBack = () => {
     navigate({ to: "/" });

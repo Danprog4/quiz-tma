@@ -1,5 +1,5 @@
 import { TRPCRouterRecord } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "~/lib/db";
 import { quizResultsTable, usersTable } from "~/lib/db/schema";
@@ -25,7 +25,6 @@ export const resultsRouter = {
       }));
     }),
 
-  // Создать результат квиза
   createResult: procedure
     .input(
       z.object({
@@ -37,30 +36,48 @@ export const resultsRouter = {
       if (!ctx.userId) {
         throw new Error("User not found");
       }
+      const oldResult = await db.query.quizResultsTable.findFirst({
+        where: and(
+          eq(quizResultsTable.userId, ctx.userId),
+          eq(quizResultsTable.quizId, input.quizId),
+        ),
+      });
 
-      // Создаем результат
-      const result = await db
-        .insert(quizResultsTable)
-        .values({
-          userId: ctx.userId,
-          quizId: input.quizId,
-          score: input.score,
-        })
-        .returning();
+      if (!oldResult || !oldResult.score) {
+        await db
+          .insert(quizResultsTable)
+          .values({
+            userId: ctx.userId,
+            quizId: input.quizId,
+            score: input.score,
+          })
+          .returning();
 
-      // Обновляем общий счет пользователя
-      const allResults = await db
-        .select()
-        .from(quizResultsTable)
-        .where(eq(quizResultsTable.userId, ctx.userId));
+        return;
+      }
 
-      const totalScore = allResults.reduce((sum, r) => sum + (r.score || 0), 0);
+      if (oldResult.score < input.score) {
+        await db
+          .update(quizResultsTable)
+          .set({
+            score: input.score,
+          })
+          .where(
+            and(
+              eq(quizResultsTable.userId, ctx.userId),
+              eq(quizResultsTable.quizId, input.quizId),
+            ),
+          )
+          .returning();
+      }
+
+      const newScore = input.score - oldResult.score;
 
       await db
         .update(usersTable)
-        .set({ totalScore })
+        .set({ totalScore: sql`${usersTable.totalScore} + ${newScore}` })
         .where(eq(usersTable.id, ctx.userId));
 
-      return result[0];
+      return;
     }),
 } satisfies TRPCRouterRecord;
