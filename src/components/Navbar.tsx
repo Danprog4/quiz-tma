@@ -17,7 +17,7 @@ export const Navbar = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(true);
-    }, 10);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, []);
@@ -53,7 +53,7 @@ export const Navbar = () => {
       </div>
       <div
         className="flex flex-col items-center justify-center gap-1"
-        // onClick={() => navigate({ to: "/search" })}
+        onClick={() => navigate({ to: "/search" })}
       >
         {active === "search" ? <GreenZoom /> : <Zoom />}
         <p
@@ -79,7 +79,7 @@ export const Navbar = () => {
       </div>
       <div
         className="flex flex-col items-center justify-center gap-1"
-        // onClick={() => navigate({ to: "/leaders" })}
+        onClick={() => navigate({ to: "/leaders" })}
       >
         {active === "leaders" ? <GreenFavourites /> : <Favourites />}
         <p

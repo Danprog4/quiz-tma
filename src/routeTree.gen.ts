@@ -11,15 +11,29 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SearchImport } from './routes/search'
 import { Route as QuizzesImport } from './routes/quizzes'
+import { Route as LeadersImport } from './routes/leaders'
 import { Route as IndexImport } from './routes/index'
 import { Route as QuizIdImport } from './routes/quiz.$id'
 
 // Create/Update Routes
 
+const SearchRoute = SearchImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const QuizzesRoute = QuizzesImport.update({
   id: '/quizzes',
   path: '/quizzes',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LeadersRoute = LeadersImport.update({
+  id: '/leaders',
+  path: '/leaders',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,11 +60,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/leaders': {
+      id: '/leaders'
+      path: '/leaders'
+      fullPath: '/leaders'
+      preLoaderRoute: typeof LeadersImport
+      parentRoute: typeof rootRoute
+    }
     '/quizzes': {
       id: '/quizzes'
       path: '/quizzes'
       fullPath: '/quizzes'
       preLoaderRoute: typeof QuizzesImport
+      parentRoute: typeof rootRoute
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchImport
       parentRoute: typeof rootRoute
     }
     '/quiz/$id': {
@@ -67,41 +95,51 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/leaders': typeof LeadersRoute
   '/quizzes': typeof QuizzesRoute
+  '/search': typeof SearchRoute
   '/quiz/$id': typeof QuizIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/leaders': typeof LeadersRoute
   '/quizzes': typeof QuizzesRoute
+  '/search': typeof SearchRoute
   '/quiz/$id': typeof QuizIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/leaders': typeof LeadersRoute
   '/quizzes': typeof QuizzesRoute
+  '/search': typeof SearchRoute
   '/quiz/$id': typeof QuizIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/quizzes' | '/quiz/$id'
+  fullPaths: '/' | '/leaders' | '/quizzes' | '/search' | '/quiz/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/quizzes' | '/quiz/$id'
-  id: '__root__' | '/' | '/quizzes' | '/quiz/$id'
+  to: '/' | '/leaders' | '/quizzes' | '/search' | '/quiz/$id'
+  id: '__root__' | '/' | '/leaders' | '/quizzes' | '/search' | '/quiz/$id'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LeadersRoute: typeof LeadersRoute
   QuizzesRoute: typeof QuizzesRoute
+  SearchRoute: typeof SearchRoute
   QuizIdRoute: typeof QuizIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LeadersRoute: LeadersRoute,
   QuizzesRoute: QuizzesRoute,
+  SearchRoute: SearchRoute,
   QuizIdRoute: QuizIdRoute,
 }
 
@@ -116,15 +154,23 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/leaders",
         "/quizzes",
+        "/search",
         "/quiz/$id"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/leaders": {
+      "filePath": "leaders.tsx"
+    },
     "/quizzes": {
       "filePath": "quizzes.tsx"
+    },
+    "/search": {
+      "filePath": "search.tsx"
     },
     "/quiz/$id": {
       "filePath": "quiz.$id.tsx"

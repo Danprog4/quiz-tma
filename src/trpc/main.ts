@@ -1,7 +1,8 @@
 import { TRPCRouterRecord } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "~/lib/db";
+import { usersTable } from "~/lib/db/schema";
 import { procedure, publicProcedure } from "./init";
 
 export const router = {
@@ -35,6 +36,26 @@ export const router = {
           eq(quizResults.userId, userId) && eq(quizResults.quizId, input.quizId),
       });
       return result;
+    }),
+
+  getLeaderboard: publicProcedure
+    .input(z.object({ limit: z.number().optional().default(10) }))
+    .query(async ({ input }) => {
+      const users = await db
+        .select({
+          id: usersTable.id,
+          name: usersTable.name,
+          photoUrl: usersTable.photoUrl,
+          totalScore: usersTable.totalScore,
+        })
+        .from(usersTable)
+        .orderBy(desc(usersTable.totalScore))
+        .limit(input.limit);
+
+      return users.map((user, index) => ({
+        ...user,
+        rank: index + 1,
+      }));
     }),
 } satisfies TRPCRouterRecord;
 

@@ -56,7 +56,7 @@ function RouteComponent() {
       <main className="mx-4 flex flex-col">
         <section>
           <div className="flex justify-between">
-            <h1 className="text-xl uppercase">Квизы</h1>
+            <h1 className="text-2xl uppercase">Квизы</h1>
           </div>
           <div className="min-h-[200px]">
             <Tabs />
