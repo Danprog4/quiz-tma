@@ -6,6 +6,7 @@ import { SignJWT } from "jose";
 import { z } from "zod";
 import { db } from "~/lib/db";
 import { usersTable } from "~/lib/db/schema";
+import { checkTelegramMembership } from "~/lib/utils/checkIsMember";
 import { publicProcedure } from "./init";
 
 export const authRouter = {
@@ -72,6 +73,11 @@ export const authRouter = {
         telegramUser.first_name +
         (telegramUser.last_name ? ` ${telegramUser.last_name}` : "");
 
+      const isMember = await checkTelegramMembership({
+        userId: telegramUser.id,
+        chatId: "-1002741921121",
+      });
+
       if (!existingUser) {
         const newUser = await db
           .insert(usersTable)
@@ -79,6 +85,7 @@ export const authRouter = {
             id: telegramUser.id,
             name,
             photoUrl: telegramUser.photo_url || null,
+            isMember,
           })
           .returning();
 
@@ -86,6 +93,13 @@ export const authRouter = {
 
         return newUser[0];
       }
+
+      await db
+        .update(usersTable)
+        .set({
+          isMember,
+        })
+        .where(eq(usersTable.id, telegramUser.id));
 
       return existingUser;
     }),

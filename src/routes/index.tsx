@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Ad } from "~/components/Ad";
 import { Coin } from "~/components/Coin";
 import Slider from "~/components/Slider";
 import { useUser } from "~/hooks/useUser";
@@ -57,6 +58,7 @@ function Home() {
           <Coin />
         </div>
       </header>
+      <Ad />
       <main className="mx-4 flex flex-col">
         <Slider quizes={quizes || []} />
         <section className="my-4">

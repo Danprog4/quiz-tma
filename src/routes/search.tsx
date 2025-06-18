@@ -53,7 +53,7 @@ function SearchPage() {
         <div className="mb-4">
           <h2 className="text-2xl font-normal text-white">найдено</h2>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-5">
+        <div className="mt-3 grid grid-cols-2 gap-4">
           {quizes
             ?.filter(
               (quiz) =>

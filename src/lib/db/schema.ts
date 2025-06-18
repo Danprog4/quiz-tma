@@ -14,6 +14,7 @@ export const usersTable = pgTable("users", {
   photoUrl: varchar("photo_url", { length: 255 }),
   name: varchar("name", { length: 255 }),
   totalScore: integer("total_score").default(0),
+  isMember: boolean("is_member").default(false),
 });
 
 export const quizzesTable = pgTable("quizzes", {

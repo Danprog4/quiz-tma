@@ -12,8 +12,8 @@ import CustomAudioPlayer from "~/components/CustomAudioPlayer";
 import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
 import { FullPageSpinner } from "~/components/Spinner";
 import { useUser } from "~/hooks/useUser";
+import { setIsSubscribed } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
-
 export const Route = createFileRoute("/quiz/$id")({
   component: RouteComponent,
 });
@@ -162,6 +162,9 @@ function RouteComponent() {
   console.log(score, "score");
 
   const handleBack = () => {
+    if (!user?.isMember) {
+      setIsSubscribed(true);
+    }
     navigate({ to: "/" });
   };
 

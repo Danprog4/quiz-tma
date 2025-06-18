@@ -35,6 +35,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await queryClient.prefetchQuery(
           trpc.quizzes.getQuestions.queryOptions({ quizId: quiz.id }),
         );
+        await queryClient.prefetchQuery(
+          trpc.main.getLeaderboard.queryOptions({ limit: 50 }),
+        );
       });
       await Promise.all(prefetchQuizPromises);
 
