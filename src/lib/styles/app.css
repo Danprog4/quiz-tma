@@ -20,3 +20,19 @@ body {
     transform: translate(calc(-50% - 0.5rem));
   }
 }
+
+body,
+html {
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent bounce scrolling on iOS */
+body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
