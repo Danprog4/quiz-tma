@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Drawer } from "vaul";
 import { Ad } from "~/components/Ad";
 import { Coin } from "~/components/Coin";
@@ -43,6 +44,7 @@ function Home() {
   const navigate = useNavigate();
   const { user } = useUser();
   const trpc = useTRPC();
+  const [openQuizId, setOpenQuizId] = useState<number | null>(null);
 
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
 
@@ -91,7 +93,11 @@ function Home() {
           </div>
           <div className="mt-3 grid grid-cols-2 gap-5">
             {quizes?.map((quiz) => (
-              <Drawer.Root key={quiz.id}>
+              <Drawer.Root
+                key={quiz.id}
+                open={openQuizId === quiz.id}
+                onOpenChange={(open) => setOpenQuizId(open ? quiz.id : null)}
+              >
                 <Drawer.Trigger asChild>
                   <div className="cursor-pointer">
                     <div
@@ -133,9 +139,25 @@ function Home() {
                 </Drawer.Trigger>
                 <Drawer.Portal>
                   <Drawer.Overlay className="fixed inset-0 z-40 bg-black/50" />
-                  <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-black">
-                    <div className="flex justify-center bg-black pt-3 pb-2">
-                      <div className="h-1 w-12 rounded-full bg-gray-300" />
+                  <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-[#212121]">
+                    <div className="flex items-center justify-between px-4 pt-4">
+                      <svg
+                        onClick={() => setOpenQuizId(null)}
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7 19H5V17H7V19ZM19 19H17V17H19V19ZM9 15V17H7V15H9ZM17 17H15V15H17V17ZM11 15H9V13H11V15ZM15 15H13V13H15V15ZM13 13H11V11H13V13ZM11 11H9V9H11V11ZM15 11H13V9H15V11ZM9 9H7V7H9V9ZM17 9H15V7H17V9ZM7 7H5V5H7V7ZM19 7H17V5H19V7Z"
+                          fill="white"
+                        />
+                      </svg>
+                      <div className="flex items-center gap-2">
+                        <Coin />
+                        {user?.totalScore}
+                      </div>
                     </div>
                     <div className="flex-1 overflow-y-auto">
                       <QuizDrawer quizId={quiz.id} />

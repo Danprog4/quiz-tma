@@ -170,7 +170,7 @@ export function QuizDrawer({ quizId }: QuizDrawerProps) {
     <>
       {isFinished ? (
         /* Finish Screen */
-        <div className="h-full min-h-screen w-full bg-black pb-32 text-white">
+        <div className="h-full min-h-screen w-full bg-[#212121] pb-32 text-white">
           <main className="mx-4 flex flex-col pt-8">
             <section>
               <div className="relative w-full border-2 border-white bg-[#C0C0C0]">
@@ -249,7 +249,7 @@ export function QuizDrawer({ quizId }: QuizDrawerProps) {
         </div>
       ) : !isMainVisible ? (
         /* Questions Screen */
-        <div className="h-full min-h-screen w-full bg-black pb-32 text-white">
+        <div className="h-full min-h-screen w-full bg-[#212121] pb-32 text-white">
           <main className="mx-4 flex flex-col pt-8">
             <section>
               <div className="relative w-full border-2 border-white bg-[#C0C0C0] px-2 py-4">
@@ -364,7 +364,7 @@ export function QuizDrawer({ quizId }: QuizDrawerProps) {
         </div>
       ) : (
         /* Start Screen */
-        <div className="h-full min-h-screen w-full bg-black pb-32 text-white">
+        <div className="h-full min-h-screen w-full bg-[#212121] pb-32 text-white">
           <main className="mx-4 flex flex-col pt-8">
             <section>
               <div className="relative w-full border-2 border-white bg-[#C0C0C0]">
