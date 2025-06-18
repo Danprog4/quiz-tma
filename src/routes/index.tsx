@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Drawer } from "vaul";
 import { Ad } from "~/components/Ad";
 import { Coin } from "~/components/Coin";
-import { QuizDrawer } from "~/components/QuizDrawer";
 import Slider from "~/components/Slider";
 import { useUser } from "~/hooks/useUser";
 import { useTRPC } from "~/trpc/init/react";
@@ -140,8 +139,8 @@ function Home() {
                 </Drawer.Trigger>
                 <Drawer.Portal>
                   <Drawer.Overlay className="fixed inset-0 z-40 bg-black/50" />
-                  <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-[#212121]">
-                    <div className="flex items-center justify-between px-4 pt-4">
+                  <Drawer.Content className="safe-area-inset-bottom fixed right-0 bottom-0 left-0 z-50 flex h-[96%] flex-col rounded-t-[10px] bg-[#212121]">
+                    {/* <div className="flex items-center justify-between px-4 pt-4">
                       <svg
                         onClick={() => setOpenQuizId(null)}
                         width="24"
@@ -162,7 +161,7 @@ function Home() {
                     </div>
                     <div className="flex-1 overflow-y-auto">
                       <QuizDrawer quizId={quiz.id} />
-                    </div>
+                    </div> */}
                   </Drawer.Content>
                 </Drawer.Portal>
               </Drawer.Root>
