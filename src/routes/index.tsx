@@ -94,6 +94,7 @@ function Home() {
           <div className="mt-3 grid grid-cols-2 gap-5">
             {quizes?.map((quiz) => (
               <Drawer.Root
+                noBodyStyles
                 key={quiz.id}
                 open={openQuizId === quiz.id}
                 onOpenChange={(open) => setOpenQuizId(open ? quiz.id : null)}
