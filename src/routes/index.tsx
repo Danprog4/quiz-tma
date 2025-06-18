@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Drawer } from "vaul";
 import { Ad } from "~/components/Ad";
 import { Coin } from "~/components/Coin";
+import { QuizDrawer } from "~/components/QuizDrawer";
 import Slider from "~/components/Slider";
 import { useUser } from "~/hooks/useUser";
 import { useTRPC } from "~/trpc/init/react";
@@ -9,17 +11,19 @@ import { useTRPC } from "~/trpc/init/react";
 interface Quiz {
   id: number;
   title: string;
-  description: string;
-  image_url: string;
-  is_popular: boolean;
-  is_new: boolean;
-  max_score: number;
-  collaborator_name: string;
-  collaborator_logo: string;
-  collaborator_link: string;
-  categories: { name: string; id: number; quiz_id: number }[];
-  questions: any[];
-  score_ratings: any[];
+  description: string | null;
+  imageUrl: string | null;
+  isPopular: boolean | null;
+  isNew: boolean | null;
+  maxScore: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date | null;
+  categories: Array<{
+    id: number;
+    quizId: number;
+    name: string;
+  }>;
 }
 
 interface User {
@@ -87,47 +91,58 @@ function Home() {
           </div>
           <div className="mt-3 grid grid-cols-2 gap-5">
             {quizes?.map((quiz) => (
-              <div
-                key={quiz.id}
-                className="cursor-pointer"
-                onClick={() => navigate({ to: `/quiz/${quiz.id}` })}
-              >
-                <div
-                  style={{
-                    borderTop: "4px solid white",
-                    borderLeft: "4px solid white",
-                    borderRight: "4px solid #293133",
-                    borderBottom: "4px solid #293133",
-                  }}
-                  className="relative h-54 w-full"
-                >
-                  <div className="flex max-h-6 w-full items-center bg-[#010089]">
-                    <p className="px-2 py-2 text-xs uppercase">
-                      {quiz.categories.length > 0
-                        ? quiz.categories[0].name.substring(0, 18)
-                        : ""}
-                    </p>
+              <Drawer.Root key={quiz.id}>
+                <Drawer.Trigger asChild>
+                  <div className="cursor-pointer">
+                    <div
+                      style={{
+                        borderTop: "4px solid white",
+                        borderLeft: "4px solid white",
+                        borderRight: "4px solid #293133",
+                        borderBottom: "4px solid #293133",
+                      }}
+                      className="relative h-54 w-full"
+                    >
+                      <div className="flex max-h-6 w-full items-center bg-[#010089]">
+                        <p className="px-2 py-2 text-xs uppercase">
+                          {quiz.categories.length > 0
+                            ? quiz.categories[0].name.substring(0, 18)
+                            : ""}
+                        </p>
+                      </div>
+                      <img
+                        className="h-46 w-full object-cover"
+                        src={quiz.imageUrl || "/placeholder.png"}
+                        alt={quiz.title}
+                        width={1000}
+                        height={100}
+                      />
+                      <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.8),transparent)]" />
+                      <div className="absolute bottom-2 left-2">
+                        {quiz.isNew && (
+                          <h3 className="text-md font-medium text-[#F97316] uppercase">
+                            Новинка
+                          </h3>
+                        )}
+                        <h3 className="text-md mt-1 w-40 break-words uppercase">
+                          {quiz.title}
+                        </h3>
+                      </div>
+                    </div>
                   </div>
-                  <img
-                    className="h-46 w-full object-cover"
-                    src={quiz.imageUrl || "/placeholder.png"}
-                    alt={quiz.title}
-                    width={1000}
-                    height={100}
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.8),transparent)]" />
-                  <div className="absolute bottom-2 left-2">
-                    {quiz.isNew && (
-                      <h3 className="text-md font-medium text-[#F97316] uppercase">
-                        Новинка
-                      </h3>
-                    )}
-                    <h3 className="text-md mt-1 w-40 break-words uppercase">
-                      {quiz.title}
-                    </h3>
-                  </div>
-                </div>
-              </div>
+                </Drawer.Trigger>
+                <Drawer.Portal>
+                  <Drawer.Overlay className="fixed inset-0 z-40 bg-black/50" />
+                  <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-black">
+                    <div className="flex justify-center bg-black pt-3 pb-2">
+                      <div className="h-1 w-12 rounded-full bg-gray-300" />
+                    </div>
+                    <div className="flex-1 overflow-y-auto">
+                      <QuizDrawer quizId={quiz.id} />
+                    </div>
+                  </Drawer.Content>
+                </Drawer.Portal>
+              </Drawer.Root>
             ))}
           </div>
         </section>
