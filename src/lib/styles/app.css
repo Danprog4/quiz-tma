@@ -21,6 +21,7 @@ body {
   }
 }
 
+/* Prevent pull-to-refresh and other unwanted scrolling behaviors in Telegram mini apps */
 body,
 html {
   touch-action: pan-x pan-y;
