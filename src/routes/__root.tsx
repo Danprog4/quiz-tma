@@ -112,34 +112,34 @@ function RootComponent() {
       <AuthProvider>
         <Outlet />
         <Navbar />
-        <Drawer.Root noBodyStyles>
+        <Drawer.Root>
           <Drawer.Trigger asChild>
-            <button className="fixed right-4 bottom-4 z-50 h-12 w-12 rounded-full bg-blue-500 text-white shadow-lg">
+            <div className="fixed right-4 bottom-4 z-50 h-12 w-12 rounded-full bg-blue-500 text-white shadow-lg">
               +
-            </button>
+            </div>
           </Drawer.Trigger>
           <Drawer.Portal>
-            <Drawer.Overlay className="fixed inset-0 z-40 bg-black/50" />
-            <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-[#212121] pb-[env(safe-area-inset-bottom)]">
-              <div className="flex items-center justify-between px-4 pt-4">
-                <Drawer.Close asChild>
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="cursor-pointer"
-                  >
-                    <path
-                      d="M7 19H5V17H7V19ZM19 19H17V17H19V19ZM9 15V17H7V15H9ZM17 17H15V15H17V17ZM11 15H9V13H11V15ZM15 15H13V13H15V15ZM13 13H11V11H13V13ZM11 11H9V9H11V11ZM15 11H13V9H15V11ZM9 9H7V7H9V9ZM17 9H15V7H17V9ZM7 7H5V5H7V7ZM19 7H17V5H19V7Z"
-                      fill="white"
-                    />
-                  </svg>
-                </Drawer.Close>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4">
-                {/* Empty drawer content */}
+            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+            <Drawer.Content className="pt fixed right-0 bottom-0 left-0 z-[1000] flex flex-col rounded-t-[10px]">
+              <div className="flex-1 rounded-t-[10px] bg-neutral-900 pt-2 pr-4 pb-7 pl-4">
+                <div className="mx-auto mb-8 h-1.5 w-12 flex-shrink-0 rounded-full bg-neutral-600" />
+                <div className="mx-auto">
+                  <div className="space-y-4">
+                    <div className="rounded-lg bg-gradient-to-r from-neutral-800 to-neutral-900 p-4">
+                      <h3 className="mb-2 font-medium text-white">Без ограничений</h3>
+                      <p className="text-sm text-neutral-400">
+                        Создавай и выполняй любое количество своих или готовых заданий
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-gradient-to-r from-neutral-800 to-neutral-900 p-4">
+                      <h3 className="mb-2 font-medium text-white">Больше токенов</h3>
+                      <p className="text-sm text-neutral-400">
+                        Получай в два раза больше токенов за пройденные дни и продлевай за
+                        них свой премиум
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Drawer.Content>
           </Drawer.Portal>
