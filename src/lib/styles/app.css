@@ -53,9 +53,9 @@ body,
 .height-fix,
 [data-rk] {
   background-color: black !important;
+}
 
-
-  @supports (-webkit-touch-callout: none) {
+@supports (-webkit-touch-callout: none) {
   .height-fix {
     height: 100vh; /* Fallback for browsers that do not support custom properties */
     height: calc(var(--vh, 1vh) * 100);
