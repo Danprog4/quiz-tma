@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Drawer } from "vaul";
 import { Ad } from "~/components/Ad";
 import { Coin } from "~/components/Coin";
@@ -45,47 +45,11 @@ function Home() {
   const { user } = useUser();
   const trpc = useTRPC();
   const [openQuizId, setOpenQuizId] = useState<number | null>(null);
-  const [savedScrollPosition, setSavedScrollPosition] = useState(0);
 
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
 
-  // Handle drawer state changes with proper scroll management
-  useEffect(() => {
-    if (openQuizId) {
-      // Save current scroll position
-      setSavedScrollPosition(window.scrollY);
-
-      // Prevent body scroll and maintain position
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${window.scrollY}px`;
-      document.body.style.width = "100%";
-      document.body.style.overflow = "hidden";
-    } else {
-      // Restore body scroll and position
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
-
-      // Restore scroll position
-      window.scrollTo(0, savedScrollPosition);
-    }
-
-    // Cleanup function
-    return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
-    };
-  }, [openQuizId, savedScrollPosition]);
-
-  const handleDrawerClose = () => {
-    setOpenQuizId(null);
-  };
-
   return (
-    <div className="relative min-h-screen w-full bg-black pb-32 text-white">
+    <div className="relative h-full w-full bg-black pb-32 text-white">
       <div className="pointer-events-none absolute inset-0 z-10">
         <img
           src="/telek.png"
@@ -133,8 +97,6 @@ function Home() {
                 key={quiz.id}
                 open={openQuizId === quiz.id}
                 onOpenChange={(open) => setOpenQuizId(open ? quiz.id : null)}
-                shouldScaleBackground={false}
-                preventScrollRestoration={true}
               >
                 <Drawer.Trigger asChild>
                   <div className="cursor-pointer">
@@ -180,8 +142,7 @@ function Home() {
                   <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-[#212121]">
                     <div className="flex items-center justify-between px-4 pt-4">
                       <svg
-                        onClick={handleDrawerClose}
-                        className="cursor-pointer"
+                        onClick={() => setOpenQuizId(null)}
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
