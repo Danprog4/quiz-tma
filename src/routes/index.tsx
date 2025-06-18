@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Drawer } from "vaul";
 import { Ad } from "~/components/Ad";
 import { Coin } from "~/components/Coin";
@@ -47,6 +47,20 @@ function Home() {
   const [openQuizId, setOpenQuizId] = useState<number | null>(null);
 
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
+
+  // Prevent page scroll when drawer is open
+  useEffect(() => {
+    if (openQuizId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to reset overflow when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [openQuizId]);
 
   return (
     <div className="relative min-h-screen w-full bg-black pb-32 text-white">
