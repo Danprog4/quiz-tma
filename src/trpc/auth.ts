@@ -25,12 +25,23 @@ export const authRouter = {
           expiresIn: 0,
         });
       } catch (error) {
+        console.error("Init data validation error:", error);
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Invalid init data",
         });
       }
-      const parsedData = parse(input.initData);
+
+      let parsedData;
+      try {
+        parsedData = parse(input.initData);
+      } catch (error) {
+        console.error("Init data parsing error:", error);
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Failed to parse init data",
+        });
+      }
 
       console.log(parsedData, "parsedData");
 
@@ -38,68 +49,113 @@ export const authRouter = {
       const referrerId = input.startParam?.split("_")[1];
       console.log(referrerId, "startParam");
 
-      if (!telegramUser) {
+      if (!telegramUser || !telegramUser.id) {
+        console.error("No valid telegram user found:", telegramUser);
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Invalid init data",
+          message: "No valid user data found",
         });
       }
 
-      const token = await new SignJWT({ userId: telegramUser.id })
-        .setProtectedHeader({ alg: "HS256" })
-        .setIssuedAt()
-        .setExpirationTime("1y")
-        .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
+      let token;
+      try {
+        token = await new SignJWT({ userId: telegramUser.id })
+          .setProtectedHeader({ alg: "HS256" })
+          .setIssuedAt()
+          .setExpirationTime("1y")
+          .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
+      } catch (error) {
+        console.error("JWT creation error:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create authentication token",
+        });
+      }
 
       console.log(token, "token auth");
 
       const event = getEvent();
 
-      setCookie(event, "auth", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24 * 365,
-        path: "/",
-      });
+      try {
+        setCookie(event, "auth", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 60 * 60 * 24 * 365,
+          path: "/",
+        });
+      } catch (error) {
+        console.error("Cookie setting error:", error);
+        // Continue execution - cookie failure shouldn't break the login
+      }
 
       console.log(event, "event auth");
       console.log(telegramUser, "telegramUser");
 
-      const existingUser = await db.query.usersTable.findFirst({
-        where: eq(usersTable.id, telegramUser.id),
-      });
+      let existingUser;
+      try {
+        existingUser = await db.query.usersTable.findFirst({
+          where: eq(usersTable.id, telegramUser.id),
+        });
+      } catch (error) {
+        console.error("Database query error:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Database error occurred",
+        });
+      }
+
       console.log(existingUser, "existingUser");
+
       const name =
         telegramUser.first_name +
         (telegramUser.last_name ? ` ${telegramUser.last_name}` : "");
 
-      const isMember = await checkTelegramMembership({
-        userId: telegramUser.id,
-        chatId: "-1002741921121",
-      });
-
-      if (!existingUser) {
-        const newUser = await db
-          .insert(usersTable)
-          .values({
-            id: telegramUser.id,
-            name,
-            photoUrl: telegramUser.photo_url || null,
-            isMember,
-          })
-          .returning();
-
-        console.log(newUser, "newUser");
-
-        return newUser[0];
+      let isMember = false;
+      try {
+        isMember = await checkTelegramMembership({
+          userId: telegramUser.id,
+          chatId: "-1002741921121",
+        });
+      } catch (error) {
+        console.error("Telegram membership check error:", error);
+        // Default to false if membership check fails
+        isMember = false;
       }
 
-      await db
-        .update(usersTable)
-        .set({
-          isMember,
-        })
-        .where(eq(usersTable.id, telegramUser.id));
+      if (!existingUser) {
+        try {
+          const newUser = await db
+            .insert(usersTable)
+            .values({
+              id: telegramUser.id,
+              name,
+              photoUrl: telegramUser.photo_url || null,
+              isMember,
+            })
+            .returning();
+
+          console.log(newUser, "newUser");
+          return newUser[0];
+        } catch (error) {
+          console.error("User creation error:", error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create user",
+          });
+        }
+      }
+
+      try {
+        await db
+          .update(usersTable)
+          .set({
+            isMember,
+          })
+          .where(eq(usersTable.id, telegramUser.id));
+      } catch (error) {
+        console.error("User update error:", error);
+        // Continue execution - update failure shouldn't break the login
+      }
 
       return existingUser;
     }),
