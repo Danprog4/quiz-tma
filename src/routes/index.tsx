@@ -50,7 +50,7 @@ function Home() {
 
   return (
     <div className="relative min-h-screen w-screen overflow-x-hidden bg-black pb-32 text-white">
-      <div className="pointer-events-none absolute inset-0 z-10">
+      <div className="pointer-events-none fixed inset-0 z-10">
         <img
           src="/telek.png"
           alt="Decorative overlay"
