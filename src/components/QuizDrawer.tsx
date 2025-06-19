@@ -533,7 +533,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                     <h3 className="mt-1 w-64 text-xl break-words text-black uppercase">
                       {quiz?.title}
                     </h3>
-                    <div className="max-h-10 bg-[#CECECE]">
+                    <div className="max-h-10">
                       <div className="flex items-center px-2 py-2">
                         <p className="mr-2 text-lg text-black">{quiz?.maxScore}</p>
                         <Coin />
