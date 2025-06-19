@@ -8,7 +8,6 @@ import {
 import { backButton, init, mockTelegramEnv, swipeBehavior } from "@telegram-apps/sdk";
 import { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import { useEffect } from "react";
-import { Drawer } from "vaul";
 import { AuthProvider } from "~/components/AuthProvider";
 import { Navbar } from "~/components/Navbar";
 
@@ -112,38 +111,6 @@ function RootComponent() {
       <AuthProvider>
         <Outlet />
         <Navbar />
-        <Drawer.Root>
-          <Drawer.Trigger asChild>
-            <div className="fixed right-4 bottom-4 z-50 h-12 w-12 rounded-full bg-blue-500 text-white shadow-lg">
-              +
-            </div>
-          </Drawer.Trigger>
-          <Drawer.Portal>
-            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-            <Drawer.Content className="pt fixed right-0 bottom-0 left-0 z-[1000] flex flex-col rounded-t-[10px]">
-              <div className="flex-1 rounded-t-[10px] bg-neutral-900 pt-2 pr-4 pb-7 pl-4">
-                <div className="mx-auto mb-8 h-1.5 w-12 flex-shrink-0 rounded-full bg-neutral-600" />
-                <div className="mx-auto">
-                  <div className="space-y-4">
-                    <div className="rounded-lg bg-gradient-to-r from-neutral-800 to-neutral-900 p-4">
-                      <h3 className="mb-2 font-medium text-white">Без ограничений</h3>
-                      <p className="text-sm text-neutral-400">
-                        Создавай и выполняй любое количество своих или готовых заданий
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-gradient-to-r from-neutral-800 to-neutral-900 p-4">
-                      <h3 className="mb-2 font-medium text-white">Больше токенов</h3>
-                      <p className="text-sm text-neutral-400">
-                        Получай в два раза больше токенов за пройденные дни и продлевай за
-                        них свой премиум
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Drawer.Content>
-          </Drawer.Portal>
-        </Drawer.Root>
       </AuthProvider>
     </RootDocument>
   );
