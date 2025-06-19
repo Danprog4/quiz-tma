@@ -144,7 +144,7 @@ export default function Tabs() {
               <Drawer.Portal>
                 <Drawer.Overlay className="fixed inset-0 z-40 bg-black/50" />
                 <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-screen flex-col rounded-t-[10px] bg-[#212121]">
-                  <div className="flex items-center justify-between px-4 pt-4">
+                  <div className="flex items-center justify-between px-4 pt-5">
                     <svg
                       onClick={() => setShowWarning(true)}
                       width="24"
