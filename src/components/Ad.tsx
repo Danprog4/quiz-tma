@@ -35,7 +35,7 @@ export const Ad = () => {
       isMember: true,
     }));
   };
-  if (!isSubscribed) return null;
+  if (isSubscribed) return null;
 
   return (
     <div className="fixed inset-0 z-[100000] flex h-screen w-full flex-col items-center justify-center gap-4 overflow-hidden bg-black/50 px-4 pb-10">
