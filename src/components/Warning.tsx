@@ -22,7 +22,7 @@ export const Warning = ({ onConfirm, onCancel }: WarningProps) => {
   if (!showWarning) return null;
 
   return (
-    <div className="absolute inset-0 z-[10000] flex h-screen w-full flex-col items-center justify-center gap-4 bg-black/50 px-4">
+    <div className="absolute inset-0 z-[10000] flex h-screen w-full flex-col items-center justify-center gap-4 bg-black/50 px-4 pb-[4vh]">
       {/* Main Warning Content */}
       <div className="flex w-72 flex-col items-center justify-center gap-6 rounded-none border-2 border-black bg-[#D9D9D9] p-3">
         {/* Warning Text */}

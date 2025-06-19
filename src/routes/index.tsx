@@ -48,6 +48,7 @@ function Home() {
   const { user } = useUser();
   const trpc = useTRPC();
   const { isSubscribed } = useSnapshot(store);
+  const { data: news } = useQuery(trpc.main.getNews.queryOptions());
   const [openQuizId, setOpenQuizId] = useState<number | null>(null);
 
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
@@ -89,7 +90,7 @@ function Home() {
       <Ad />
 
       <main className="mx-4 flex flex-col">
-        <Slider quizes={quizes || []} />
+        <Slider quizes={news || []} />
         <section className="my-4">
           <div className="flex justify-between">
             <h1 className="text-2xl uppercase">Квизы</h1>
@@ -158,6 +159,10 @@ function Home() {
                           {quiz.title}
                         </h3>
                       </div>
+                      {/* <div className="absolute right-2 bottom-2">
+                        <Complete />
+                        Пройдено
+                      </div> */}
                     </div>
                   </div>
                 </Drawer.Trigger>

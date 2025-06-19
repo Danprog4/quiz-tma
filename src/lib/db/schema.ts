@@ -32,6 +32,13 @@ export const quizzesTable = pgTable("quizzes", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const newsTable = pgTable("news", {
+  id: serial("id").primaryKey(),
+  text: varchar("text").notNull(),
+  link: varchar("link", { length: 500 }),
+  imageUrl: varchar("image_url", { length: 500 }),
+});
+
 export const categoriesTable = pgTable("categories", {
   id: serial("id").primaryKey(),
   quizId: integer("quiz_id")

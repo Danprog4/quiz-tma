@@ -57,6 +57,10 @@ export const router = {
         rank: index + 1,
       }));
     }),
+  getNews: procedure.query(async () => {
+    const news = await db.query.newsTable.findMany();
+    return news;
+  }),
 } satisfies TRPCRouterRecord;
 
 export type Router = typeof router;
