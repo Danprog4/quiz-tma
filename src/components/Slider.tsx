@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Drawer } from "vaul";
 import { Coin } from "~/components/Coin";
 import { QuizDrawer } from "~/components/QuizDrawer";
@@ -7,15 +7,103 @@ import { useUser } from "~/hooks/useUser";
 export default function QuizSlider({ quizes }: { quizes: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [openQuizId, setOpenQuizId] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [translateX, setTranslateX] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
 
   const visibleQuizes = quizes.slice(-3);
 
+  // Auto-slide functionality
+  useEffect(() => {
+    if (visibleQuizes.length <= 1 || isDragging) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === visibleQuizes.length - 1 ? 0 : prevIndex + 1,
+      );
+    }, 3000); // Change slide every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [visibleQuizes.length, isDragging]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const currentX = e.touches[0].clientX;
+    const diffX = currentX - startX;
+    setTranslateX(diffX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    const threshold = 50;
+    if (Math.abs(translateX) > threshold) {
+      if (translateX > 0 && currentIndex > 0) {
+        setCurrentIndex(currentIndex - 1);
+      } else if (translateX < 0 && currentIndex < visibleQuizes.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      }
+    }
+    
+    setTranslateX(0);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const currentX = e.clientX;
+    const diffX = currentX - startX;
+    setTranslateX(diffX);
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    const threshold = 50;
+    if (Math.abs(translateX) > threshold) {
+      if (translateX > 0 && currentIndex > 0) {
+        setCurrentIndex(currentIndex - 1);
+      } else if (translateX < 0 && currentIndex < visibleQuizes.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      }
+    }
+    
+    setTranslateX(0);
+  };
+
   return (
     <div className="relative w-full overflow-x-hidden py-4">
-      <div className="relative mx-auto h-96 w-full">
+      <div 
+        ref={containerRef}
+        className="relative mx-auto h-96 w-full select-none"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
         {visibleQuizes.map((quiz, index) => {
           const isActive = index === currentIndex;
+          const baseTransform = isActive
+            ? "0px"
+            : index > currentIndex
+              ? "calc(100% + 20px)"
+              : "calc(-100% - 20px)";
 
           return (
             <Drawer.Root
@@ -29,13 +117,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
                     isActive ? "z-10" : "z-0"
                   }`}
                   style={{
-                    transform: `translateX(${
-                      isActive
-                        ? "0px"
-                        : index > currentIndex
-                          ? "calc(100% + 20px)"
-                          : "calc(-100% - 20px)"
-                    }) scale(${isActive ? 1 : 0.9})`,
+                    transform: `translateX(calc(${baseTransform} + ${isDragging && isActive ? translateX : 0}px)) scale(${isActive ? 1 : 0.9})`,
                     opacity: isActive ? 1 : 0.7,
                   }}
                 >
@@ -249,7 +331,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
         {visibleQuizes.map((_, index) => (
           <div
             key={index}
-            className={`h-2 w-2 rounded-full transition-all duration-300 ${
+            className={`h-2 w-2 cursor-pointer rounded-full transition-all duration-300 ${
               index === currentIndex ? "w-6 bg-white" : "bg-gray-500"
             }`}
             onClick={() => setCurrentIndex(index)}
