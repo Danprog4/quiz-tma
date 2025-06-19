@@ -96,25 +96,36 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
       >
         {visibleQuizes.map((quiz, index) => {
           const isActive = index === currentIndex;
-          const baseTransform = isActive
-            ? "0px"
-            : index > currentIndex
-              ? "calc(100% + 20px)"
-              : "calc(-100% - 20px)";
+          const isPrev = index === currentIndex - 1;
+          const isNext = index === currentIndex + 1;
+
+          // Показываем только активный элемент и соседние
+          const isVisible = isActive || isPrev || isNext;
+
+          if (!isVisible) return null;
+
+          let position = "0%";
+          if (isPrev) position = "-100%";
+          if (isNext) position = "100%";
 
           return (
             <div key={quiz.id}>
               <div
-                className={`absolute top-0 left-0 h-full w-full cursor-pointer transition-all duration-500 ease-in-out ${
-                  isActive ? "z-10" : "z-0"
+                className={`absolute top-0 left-1/2 h-full w-84 cursor-pointer transition-all duration-500 ease-in-out ${
+                  isActive ? "z-20" : "z-10"
                 }`}
                 style={{
-                  transform: `translateX(calc(${baseTransform} + ${isDragging && isActive ? translateX : 0}px)) scale(${isActive ? 1 : 0.9})`,
-                  opacity: isActive ? 1 : 0.7,
+                  transform: `translateX(calc(-50% + ${position} + ${isDragging && isActive ? translateX : 0}px))`,
+                  opacity: isActive ? 1 : 0.4,
+                }}
+                onClick={() => {
+                  if (!isActive) {
+                    setCurrentIndex(index);
+                  }
                 }}
               >
                 <div
-                  className="relative mx-auto h-86 w-full max-w-md overflow-hidden"
+                  className="relative h-86 w-full overflow-hidden"
                   style={{
                     borderTop: "6px solid white",
                     borderLeft: "6px solid white",
@@ -268,7 +279,9 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
                   <div
                     className="relative h-86 w-full"
                     onClick={() => {
-                      window.open(quiz.link, "_blank");
+                      if (isActive) {
+                        window.open(quiz.link, "_blank");
+                      }
                     }}
                   >
                     <img
@@ -278,7 +291,9 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
                       width={1000}
                       height={1000}
                     />
-                    <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.8),transparent)]" />
+                    <div
+                      className={`absolute inset-0 ${isActive ? "bg-[linear-gradient(to_top,rgba(0,0,0,0.8),transparent)]" : "bg-[linear-gradient(to_top,rgba(0,0,0,0.9),rgba(0,0,0,0.5))]"}`}
+                    />
                   </div>
                   <div className="absolute bottom-4 left-4 z-10">
                     {quiz.is_new && (
@@ -296,7 +311,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
       </div>
 
       {/* Индикаторы */}
-      <div className="flex justify-center space-x-2">
+      <div className="mt-4 flex justify-center space-x-2">
         {visibleQuizes.map((_, index) => (
           <div
             key={index}
