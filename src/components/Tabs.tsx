@@ -4,7 +4,7 @@ import { Drawer } from "vaul";
 import { Coin } from "~/components/Coin";
 import { QuizDrawer } from "~/components/QuizDrawer";
 import { useUser } from "~/hooks/useUser";
-import { setShowWarning } from "~/store";
+import { setIsSubscribed, setShowWarning } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 import { Warning } from "./Warning";
 
@@ -165,7 +165,16 @@ export default function Tabs() {
                     </div>
                   </div>
                   <div className="flex-1 overflow-y-auto">
-                    <QuizDrawer quizId={quiz.id} onClose={() => setOpenQuizId(null)} />
+                    <QuizDrawer
+                      quizId={quiz.id}
+                      onClose={() => {
+                        setOpenQuizId(null);
+                        if (!user?.isMember) {
+                          setIsSubscribed(false);
+                          console.log("setIsSubscribed(false)");
+                        }
+                      }}
+                    />
                   </div>
                 </Drawer.Content>
               </Drawer.Portal>
