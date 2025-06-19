@@ -82,7 +82,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
   };
 
   return (
-    <div className="relative w-full overflow-x-hidden py-4">
+    <div className="relative w-full overflow-x-hidden pt-4">
       <div
         ref={containerRef}
         className="relative mx-auto h-96 w-full select-none"
@@ -311,11 +311,11 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
       </div>
 
       {/* Индикаторы */}
-      <div className="mt-4 flex justify-center space-x-2">
+      <div className="flex justify-center space-x-2">
         {visibleQuizes.map((_, index) => (
           <div
             key={index}
-            className={`h-2 w-2 cursor-pointer rounded-full transition-all duration-300 ${
+            className={`h-2 w-2 cursor-pointer transition-all duration-300 ${
               index === currentIndex ? "w-6 bg-white" : "bg-gray-500"
             }`}
             onClick={() => setCurrentIndex(index)}

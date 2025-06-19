@@ -130,7 +130,7 @@ function Home() {
 
       <main className="flex flex-col">
         <Slider quizes={news || []} />
-        <section className="my-4">
+        <section className="my-4 px-4">
           <div className="flex justify-between">
             <h1 className="text-2xl uppercase">Квизы</h1>
             <div className="flex items-center justify-between">
