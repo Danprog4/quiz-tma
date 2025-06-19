@@ -107,3 +107,18 @@ body,
     overflow-y: auto;
   }
 }
+
+body {
+  font-family: "Teletactile";
+  background-color: black;
+  color: white;
+  overflow-x: hidden;
+}
+
+@font-face {
+  font-family: "Teletactile";
+  src: url("/fonts/TeletactileRus.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

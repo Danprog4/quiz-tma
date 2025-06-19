@@ -21,7 +21,7 @@ function SearchPage() {
   const { data: quizes } = useQuery(trpc.quizzes.getAll.queryOptions());
 
   return (
-    <div className="min-h-screen px-4 text-white">
+    <div className="relative min-h-screen w-screen overflow-x-hidden bg-black px-4 pb-32 text-white">
       {/* Header */}
       <div className="pointer-events-none absolute inset-0 z-10">
         <img
@@ -59,7 +59,7 @@ function SearchPage() {
         <div className="mb-4">
           <h2 className="text-2xl font-normal text-white">найдено</h2>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-5">
+        <div className="mt-3 grid grid-cols-2 gap-4">
           {quizes
             ?.filter(
               (quiz) =>
