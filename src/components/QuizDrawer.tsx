@@ -537,25 +537,29 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                   </div>
                   <p className="text-md text-gray-800">{quiz?.description}</p>
 
-                  <div className="my-4 flex justify-center">
-                    <svg
-                      className="mr-2"
-                      width="30"
-                      height="30"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <rect width="24" height="24" fill="#25CE16" />
-                      <path
-                        d="M18 6V7.5H16.5V9H15V10.5H13.5V12H12V13.5H10.5V15H9.75V15.75H8.25V15H7.5V13.5H6V12.75H4.5V15H6V16.5H7.5V18H8.25V18.75H9.75V18H10.5V16.5H12V15H13.5V13.5H15V12H16.5V10.5H18V9H19.5V6H18Z"
-                        fill="white"
-                      />
-                    </svg>
-                    <p className="text-lg text-black">
-                      ПРОЙДЕНО {userQuizResult || 0}/{questions?.length || 0}
-                    </p>
-                  </div>
+                  {userQuizResult ? (
+                    <div className="my-4 flex justify-center">
+                      <svg
+                        className="mr-2"
+                        width="30"
+                        height="30"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <rect width="24" height="24" fill="#25CE16" />
+                        <path
+                          d="M18 6V7.5H16.5V9H15V10.5H13.5V12H12V13.5H10.5V15H9.75V15.75H8.25V15H7.5V13.5H6V12.75H4.5V15H6V16.5H7.5V18H8.25V18.75H9.75V18H10.5V16.5H12V15H13.5V13.5H15V12H16.5V10.5H18V9H19.5V6H18Z"
+                          fill="white"
+                        />
+                      </svg>
+                      <p className="text-lg text-black">
+                        ПРОЙДЕНО {userQuizResult}/{questions?.length}
+                      </p>
+                    </div>
+                  ) : (
+                    ""
+                  )}
 
                   <button
                     className="mt-2 w-full bg-[#0100BE] px-4 py-3 text-lg text-white"
