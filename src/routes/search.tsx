@@ -32,7 +32,7 @@ function SearchPage() {
           className="h-full w-full object-cover opacity-35"
         />
       </div>
-      <div className="flex items-center justify-between border-b border-[#424242] py-2 pt-[40px]">
+      <div className="flex items-center justify-between border-b border-[#424242] py-2 pt-5">
         <input
           type="text"
           className="w-full appearance-none border-none bg-transparent text-lg font-normal outline-none placeholder:text-white focus:border-none focus:ring-0 focus:outline-none"

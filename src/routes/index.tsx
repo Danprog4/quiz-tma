@@ -55,6 +55,8 @@ function Home() {
     trpc.main.getUserResults.queryOptions(),
   );
 
+  console.log(userQuizCoins, "userQuizCoins");
+
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
 
   // Memoized user quiz results calculation
@@ -104,6 +106,7 @@ function Home() {
       document.body.style.overflow = "";
     };
   }, [isSubscribed]);
+  console.log(userQuizResults, "userQuizResults");
 
   return (
     <div
