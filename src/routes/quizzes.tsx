@@ -30,23 +30,7 @@ function RouteComponent() {
         />
       </div>
       <header className="mx-4 flex items-center justify-between py-5 text-white">
-        <div className="flex items-center justify-between">
-          <svg
-            width="12"
-            height="21"
-            viewBox="0 0 12 21"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 0.5V1.5H8V3.5H6V5.5H4V7.5H2V8.5H1V9.5H0V11.5H1V12.5H2V13.5H4V15.5H6V17.5H7H8V18.5V19.5H10V20.5H12V17.5H10V15.5H8V13.5H6V11.5H4V9.5H6V7.5H8V5.5H10V3.5H12V0.5H10Z"
-              fill="white"
-            />
-          </svg>
-          <p onClick={handleBack} className="text-md ml-2 cursor-pointer uppercase">
-            назад
-          </p>
-        </div>
+        <h1 className="text-2xl uppercase">NETQUIZE</h1>
         <div className="flex">
           <p className="mr-2">{user?.totalScore || 0}</p>
           <Coin />
