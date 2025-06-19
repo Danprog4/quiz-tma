@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { openTelegramLink } from "@telegram-apps/sdk";
+import { useEffect } from "react";
 import { useSnapshot } from "valtio";
 import { setIsSubscribed, store } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
@@ -10,23 +11,39 @@ export const Ad = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
+  useEffect(() => {
+    if (!isSubscribed) {
+      // Scroll page to top and disable scrolling when modal is open
+      window.scrollTo(0, 0);
+      document.body.style.overflow = "hidden";
+    } else {
+      // Restore scrolling when modal is closed
+      document.body.style.overflow = "";
+    }
+
+    // Cleanup function to restore scrolling if component unmounts
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isSubscribed]);
+
   const handleSubscribe = () => {
     openTelegramLink(`https://t.me/${channelName}`);
-    setIsSubscribed(false);
+    setIsSubscribed(true);
     queryClient.setQueryData(trpc.main.getUser.queryKey(), (old: any) => ({
       ...old,
       isMember: true,
     }));
   };
-
-  if (!isSubscribed) return null;
+  console.log(isSubscribed, "isSubscribed");
+  if (isSubscribed) return null;
 
   return (
-    <div className="absolute inset-0 z-[10000] flex h-screen w-full flex-col items-center justify-start gap-4 bg-black/50 px-4 pt-24">
+    <div className="absolute inset-0 z-[10000] flex h-screen w-full flex-col items-center justify-start gap-4 overflow-y-hidden bg-black/50 px-4 pt-24">
       {/* Close Button */}
       <div className="flex w-full justify-end">
         <button
-          onClick={() => setIsSubscribed(false)}
+          onClick={() => setIsSubscribed(true)}
           className="flex h-6 w-6 items-center justify-center"
         >
           <svg
@@ -108,7 +125,7 @@ export const Ad = () => {
             {/* Decline Button */}
             <div className="flex w-full flex-col items-center gap-4">
               <button
-                onClick={() => setIsSubscribed(false)}
+                onClick={() => setIsSubscribed(true)}
                 className="flex w-full items-center justify-center gap-2.5 bg-[#AAAAAA] px-24 py-3 shadow-[inset_0_4px_4px_rgba(99,99,99,0.25)]"
                 style={{
                   borderTop: "3.5px solid white",

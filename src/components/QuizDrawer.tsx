@@ -7,13 +7,15 @@ import CustomAudioPlayer from "~/components/CustomAudioPlayer";
 import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
 import { FullPageSpinner } from "~/components/Spinner";
 import { useUser } from "~/hooks/useUser";
+import { setIsSubscribed } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 
 interface QuizDrawerProps {
   quizId: number;
+  onClose: () => void;
 }
 
-export function QuizDrawer({ quizId }: QuizDrawerProps) {
+export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
   const navigate = useNavigate();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -135,6 +137,13 @@ export function QuizDrawer({ quizId }: QuizDrawerProps) {
         score: score,
       });
 
+      console.log(user?.isMember, "user?.isMember");
+
+      if (!user?.isMember) {
+        setIsSubscribed(false);
+        console.log("setIsSubscribed(false)");
+      }
+
       setIsFinished(true);
     }
   };
@@ -230,7 +239,10 @@ export function QuizDrawer({ quizId }: QuizDrawerProps) {
                   </div>
 
                   <button
-                    onClick={() => navigate({ to: "/" })}
+                    onClick={() => {
+                      onClose();
+                      navigate({ to: "/" });
+                    }}
                     className="mb-1 w-full bg-[#0100BE] px-4 py-3 text-lg text-white"
                   >
                     НА ГЛАВНУЮ

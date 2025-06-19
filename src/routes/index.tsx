@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Drawer } from "vaul";
-import { Ad } from "~/components/Ad";
 import { Coin } from "~/components/Coin";
 import { QuizDrawer } from "~/components/QuizDrawer";
 import Slider from "~/components/Slider";
@@ -64,7 +63,7 @@ function Home() {
           <Coin />
         </div>
       </header>
-      <Ad />
+      {/* <Ad /> */}
       <main className="mx-4 flex flex-col">
         <Slider quizes={quizes || []} />
         <section className="my-4">
@@ -161,7 +160,7 @@ function Home() {
                       </div>
                     </div>
                     <div className="flex-1 overflow-y-auto">
-                      <QuizDrawer quizId={quiz.id} />
+                      <QuizDrawer quizId={quiz.id} onClose={() => setOpenQuizId(null)} />
                     </div>
                   </Drawer.Content>
                 </Drawer.Portal>

@@ -134,7 +134,7 @@ function SearchPage() {
                       </div>
                     </div>
                     <div className="flex-1 overflow-y-auto">
-                      <QuizDrawer quizId={quiz.id} />
+                      <QuizDrawer quizId={quiz.id} onClose={() => setOpenQuizId(null)} />
                     </div>
                   </Drawer.Content>
                 </Drawer.Portal>

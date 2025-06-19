@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Drawer } from "vaul";
 import { Coin } from "~/components/Coin";
 import { QuizDrawer } from "~/components/QuizDrawer";
@@ -43,7 +43,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
   const handleTouchEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    
+
     const threshold = 50;
     if (Math.abs(translateX) > threshold) {
       if (translateX > 0 && currentIndex > 0) {
@@ -52,7 +52,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
         setCurrentIndex(currentIndex + 1);
       }
     }
-    
+
     setTranslateX(0);
   };
 
@@ -71,7 +71,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
   const handleMouseUp = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    
+
     const threshold = 50;
     if (Math.abs(translateX) > threshold) {
       if (translateX > 0 && currentIndex > 0) {
@@ -80,13 +80,13 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
         setCurrentIndex(currentIndex + 1);
       }
     }
-    
+
     setTranslateX(0);
   };
 
   return (
     <div className="relative w-full overflow-x-hidden py-4">
-      <div 
+      <div
         ref={containerRef}
         className="relative mx-auto h-96 w-full select-none"
         onTouchStart={handleTouchStart}
@@ -317,7 +317,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
                     </div>
                   </div>
                   <div className="flex-1 overflow-y-auto">
-                    <QuizDrawer quizId={quiz.id} />
+                    <QuizDrawer quizId={quiz.id} onClose={() => setOpenQuizId(null)} />
                   </div>
                 </Drawer.Content>
               </Drawer.Portal>
