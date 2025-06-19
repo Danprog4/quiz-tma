@@ -19,22 +19,28 @@ export const quizzesRouter = {
 
     const quizzes = await db.select().from(quizzesTable);
 
-    // Для каждого квиза получаем категории
-    const quizzesWithCategories = await Promise.all(
+    // Для каждого квиза получаем категории и вопросы
+    const quizzesWithCategoriesAndQuestions = await Promise.all(
       quizzes.map(async (quiz) => {
         const categories = await db
           .select()
           .from(categoriesTable)
           .where(eq(categoriesTable.quizId, quiz.id));
 
+        const questions = await db
+          .select()
+          .from(questionsTable)
+          .where(eq(questionsTable.quizId, quiz.id));
+
         return {
           ...quiz,
           categories,
+          questions,
         };
       }),
     );
 
-    return quizzesWithCategories;
+    return quizzesWithCategoriesAndQuestions;
   }),
 
   // Получить квиз по ID
