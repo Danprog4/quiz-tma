@@ -1,7 +1,7 @@
 import { proxy } from "valtio";
 
 export const store = proxy<{ isSubscribed: boolean; showWarning: boolean }>({
-  isSubscribed: false,
+  isSubscribed: true,
   showWarning: false,
 });
 

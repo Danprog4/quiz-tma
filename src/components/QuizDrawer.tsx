@@ -7,7 +7,6 @@ import CustomAudioPlayer from "~/components/CustomAudioPlayer";
 import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
 import { FullPageSpinner } from "~/components/Spinner";
 import { useUser } from "~/hooks/useUser";
-import { setIsSubscribed } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 
 interface QuizDrawerProps {
@@ -110,6 +109,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
 
       if (oldScore >= score) {
         setIsFinished(true);
+
         return;
       }
 
@@ -138,11 +138,6 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
       });
 
       console.log(user?.isMember, "user?.isMember");
-
-      if (!user?.isMember) {
-        setIsSubscribed(false);
-        console.log("setIsSubscribed(false)");
-      }
 
       setIsFinished(true);
     }

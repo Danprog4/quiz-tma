@@ -35,11 +35,10 @@ export const Ad = () => {
       isMember: true,
     }));
   };
-  console.log(isSubscribed, "isSubscribed");
   if (isSubscribed) return null;
 
   return (
-    <div className="absolute inset-0 z-[10000] flex h-screen w-full flex-col items-center justify-start gap-4 overflow-y-hidden bg-black/50 px-4 pt-24">
+    <div className="fixed inset-0 z-[100000] flex h-full w-full flex-col items-center justify-center gap-4 overflow-hidden bg-black/50 px-4">
       {/* Close Button */}
       <div className="flex w-full justify-end">
         <button

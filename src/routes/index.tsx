@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSnapshot } from "valtio";
 import { Drawer } from "vaul";
+import { Ad } from "~/components/Ad";
 import { Coin } from "~/components/Coin";
 import { QuizDrawer } from "~/components/QuizDrawer";
 import Slider from "~/components/Slider";
 import { Warning } from "~/components/Warning";
 import { useUser } from "~/hooks/useUser";
-import { setShowWarning } from "~/store";
+import { setIsSubscribed, setShowWarning, store } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 
 interface Quiz {
@@ -45,9 +47,26 @@ function Home() {
   const navigate = useNavigate();
   const { user } = useUser();
   const trpc = useTRPC();
+  const { isSubscribed } = useSnapshot(store);
   const [openQuizId, setOpenQuizId] = useState<number | null>(null);
 
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
+
+  useEffect(() => {
+    if (!isSubscribed) {
+      // Scroll page to top and disable scrolling when not subscribed
+      window.scrollTo(0, 0);
+      document.body.style.overflow = "hidden";
+    } else {
+      // Restore scrolling when subscribed
+      document.body.style.overflow = "";
+    }
+
+    // Cleanup function to restore scrolling if component unmounts
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isSubscribed]);
 
   return (
     <div className="relative min-h-screen w-screen overflow-x-hidden bg-black pb-32 text-white">
@@ -65,7 +84,7 @@ function Home() {
           <Coin />
         </div>
       </header>
-      {/* <Ad /> */}
+      <Ad />
 
       <main className="mx-4 flex flex-col">
         <Slider quizes={quizes || []} />
@@ -167,7 +186,16 @@ function Home() {
                       </div>
                     </div>
                     <div className="flex-1 overflow-y-auto">
-                      <QuizDrawer quizId={quiz.id} onClose={() => setOpenQuizId(null)} />
+                      <QuizDrawer
+                        quizId={quiz.id}
+                        onClose={() => {
+                          setOpenQuizId(null);
+                          if (!user?.isMember) {
+                            setIsSubscribed(false);
+                            console.log("setIsSubscribed(false)");
+                          }
+                        }}
+                      />
                     </div>
                   </Drawer.Content>
                 </Drawer.Portal>
