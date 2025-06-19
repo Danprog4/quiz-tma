@@ -236,6 +236,11 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                   <button
                     onClick={() => {
                       onClose();
+                      queryClient.invalidateQueries({
+                        queryKey: trpc.main.getUserResult.queryKey({
+                          quizId: Number(quizId),
+                        }),
+                      });
                       navigate({ to: "/" });
                     }}
                     className="mb-1 w-full bg-[#0100BE] px-4 py-3 text-lg text-white"
