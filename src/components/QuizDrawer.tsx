@@ -68,29 +68,14 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
     trpc.quizzes.getQuestions.queryOptions({ quizId: Number(quizId) }),
   );
 
-  // Эффект для сброса состояния при изменении currentQuestionIndex
-  useEffect(() => {
-    if (!isMainVisible && !isFinished) {
-      setSelectedAnswer(null);
-      setIsCorrect(null);
-      setAnswerSubmitted(false);
-    }
-  }, [currentQuestionIndex, isMainVisible, isFinished]);
-
-  const resetQuizState = () => {
-    setMainVisible(false);
-    setIsFinished(false);
-    setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
-    setIsCorrect(null);
-    setAnswerSubmitted(false);
-    setScore(0);
-    setTotalQuestions(questions?.length || 0);
-  };
-
   const handleStart = async () => {
     try {
-      resetQuizState();
+      setMainVisible(false);
+      setIsFinished(false);
+      setSelectedAnswer(null);
+      setIsCorrect(null);
+      setTotalQuestions(questions?.length || 0);
+      setAnswerSubmitted(false);
     } catch (err) {
       console.error(err);
     }
@@ -98,14 +83,14 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
 
   const handleRestart = async () => {
     try {
-      // Принудительно перерендерим компонент, используя небольшую задержку
+      setMainVisible(false);
       setIsFinished(false);
-      setMainVisible(true);
-
-      // Используем setTimeout чтобы обеспечить правильный порядок обновлений состояния
-      setTimeout(() => {
-        resetQuizState();
-      }, 10);
+      setTotalQuestions(questions?.length || 0);
+      setSelectedAnswer(null);
+      setIsCorrect(null);
+      setCurrentQuestionIndex(0);
+      setAnswerSubmitted(false);
+      setScore(0);
     } catch (err) {
       console.error(err);
     }
@@ -116,7 +101,9 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
   const goToNextQuestion = () => {
     if (currentQuestionIndex < (questions?.length || 0) - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
-      // Состояния selectedAnswer, isCorrect, answerSubmitted будут сброшены в useEffect
+      setSelectedAnswer(null);
+      setIsCorrect(null);
+      setAnswerSubmitted(false);
     } else {
       const oldScore = userQuizCoins?.score || 0;
 
