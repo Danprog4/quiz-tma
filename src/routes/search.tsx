@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Drawer } from "vaul";
 import { Coin } from "~/components/Coin";
 import { QuizDrawer } from "~/components/QuizDrawer";
+import { Warning } from "~/components/Warning";
 import { useUser } from "~/hooks/useUser";
+import { setShowWarning } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 import { Navbar } from "../components/Navbar";
 
@@ -116,7 +118,7 @@ function SearchPage() {
                   <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-[#212121]">
                     <div className="flex items-center justify-between px-4 pt-4">
                       <svg
-                        onClick={() => setOpenQuizId(null)}
+                        onClick={() => setShowWarning(true)}
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
@@ -128,6 +130,10 @@ function SearchPage() {
                           fill="white"
                         />
                       </svg>
+                      <Warning
+                        onConfirm={() => setOpenQuizId(null)}
+                        onCancel={() => {}}
+                      />
                       <div className="flex items-center gap-2">
                         <Coin />
                         {user?.totalScore}

@@ -3,6 +3,8 @@ import { Drawer } from "vaul";
 import { Coin } from "~/components/Coin";
 import { QuizDrawer } from "~/components/QuizDrawer";
 import { useUser } from "~/hooks/useUser";
+import { setShowWarning } from "~/store";
+import { Warning } from "./Warning";
 
 export default function QuizSlider({ quizes }: { quizes: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -299,7 +301,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
                 <Drawer.Content className="fixed right-0 bottom-0 left-0 z-50 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-[#212121]">
                   <div className="flex items-center justify-between px-4 pt-4">
                     <svg
-                      onClick={() => setOpenQuizId(null)}
+                      onClick={() => setShowWarning(true)}
                       width="24"
                       height="24"
                       viewBox="0 0 24 24"
@@ -311,6 +313,7 @@ export default function QuizSlider({ quizes }: { quizes: any[] }) {
                         fill="white"
                       />
                     </svg>
+                    <Warning onConfirm={() => setOpenQuizId(null)} onCancel={() => {}} />
                     <div className="flex items-center gap-2">
                       <Coin />
                       {user?.totalScore}
