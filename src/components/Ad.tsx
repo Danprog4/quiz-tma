@@ -28,7 +28,7 @@ export const Ad = () => {
   }, [isSubscribed]);
 
   const handleSubscribe = () => {
-    openTelegramLink(`https://t.me/${channelName}`);
+    openTelegramLink(`https://t.me/netizen_netizen`);
     setIsSubscribed(true);
     queryClient.setQueryData(trpc.main.getUser.queryKey(), (old: any) => ({
       ...old,

@@ -69,7 +69,9 @@ function Home() {
   }, [isSubscribed]);
 
   return (
-    <div className="relative min-h-screen w-screen overflow-x-hidden bg-black pb-32 text-white">
+    <div
+      className={`relative min-h-screen w-screen overflow-x-hidden bg-black pb-32 text-white ${!isSubscribed ? "overflow-hidden" : ""}`}
+    >
       <div className="pointer-events-none fixed inset-0 z-10">
         <img
           src="/telek.png"
