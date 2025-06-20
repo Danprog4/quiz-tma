@@ -69,7 +69,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const startParamValue = getStartParam();
       const quizId = startParamValue ? Number(startParamValue) : null;
 
-      // Проверяем, что получили валидное число
       if (quizId && !isNaN(quizId)) {
         setOpenQuizId(quizId);
       }
