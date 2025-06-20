@@ -52,14 +52,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const getStartParam = async () => {
         frontInitData.restore();
         console.log(
-          "frontInitData.startParam",
+          "frontInitData.startParam from getStartParam",
           frontInitData.startParam()?.split("_")[1],
         );
-        return frontInitData.startParam();
+        return frontInitData.startParam()?.split("_")[1];
       };
 
       if (frontInitData.startParam) {
-        console.log("frontInitData.startParam", frontInitData.startParam());
+        console.log(
+          "frontInitData.startParam from AuthProvider",
+          frontInitData.startParam(),
+        );
         setOpenQuizId(Number(getStartParam()));
       }
 
