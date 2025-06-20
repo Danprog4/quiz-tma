@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const getStartParam = async () => {
         frontInitData.restore();
+        console.log("frontInitData.startParam", frontInitData.startParam());
         return frontInitData.startParam();
       };
 
