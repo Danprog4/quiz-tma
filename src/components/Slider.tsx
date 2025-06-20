@@ -260,7 +260,7 @@ export default function QuizSlider({ quizes }: { quizes: any }) {
                 <div className="relative h-86 w-full">
                   <img
                     className="h-86 w-full object-cover"
-                    src={"/fallback.png"}
+                    src={"/goofy.jpg"}
                     alt={quiz.text}
                     width={1000}
                     height={1000}

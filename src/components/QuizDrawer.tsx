@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { hapticFeedback } from "@telegram-apps/sdk";
-import { useEffect, useState } from "react";
+import { hapticFeedback, shareURL } from "@telegram-apps/sdk";
+import { useEffect, useMemo, useState } from "react";
 import { Coin } from "~/components/Coin";
 import CustomAudioPlayer from "~/components/CustomAudioPlayer";
 import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
@@ -165,6 +165,14 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
         return null;
     }
   };
+
+  const link = useMemo((): string => {
+    return `https://t.me/@quiztma_bot?startapp=ref_${quizId}`;
+  }, [quizId]);
+
+  const text = useMemo((): string => {
+    return `Пройди квиз ${quiz?.title} в приложении NETQUIZE!`;
+  }, [quiz]);
 
   if (!quiz) {
     return <FullPageSpinner />;
@@ -566,12 +574,37 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                     ""
                   )}
 
-                  <button
-                    className="mt-2 w-full bg-[#0100BE] px-4 py-3 text-lg text-white"
-                    onClick={handleStart}
-                  >
-                    Пройти
-                  </button>
+                  <div className="mt-4 flex items-center justify-center gap-1">
+                    <button
+                      className="flex h-[41px] w-full items-center justify-center bg-[#0100BE] text-lg text-white"
+                      onClick={handleStart}
+                    >
+                      Пройти
+                    </button>
+                    <button
+                      className="flex h-[41px] w-[41px] items-center justify-center bg-[#D9D9D9]"
+                      onClick={() => {
+                        if (shareURL.isAvailable()) {
+                          shareURL(link, text);
+                        }
+                      }}
+                    >
+                      <svg
+                        width="25"
+                        height="25"
+                        viewBox="0 0 25 25"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <g opacity="0.6">
+                          <path
+                            d="M11.5 7.5H5.5V19.5H17.5V13.5H19.5V21.5H3.5V5.5H11.5V7.5ZM11.5 15.5H9.5V13.5H11.5V15.5ZM13.5 13.5H11.5V11.5H13.5V13.5ZM15.5 11.5H13.5V9.5H15.5V11.5ZM21.5 11.5H19.5V7.5H17.5V5.5H13.5V3.5H21.5V11.5ZM17.5 9.5H15.5V7.5H17.5V9.5Z"
+                            fill="black"
+                          />
+                        </g>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </section>
