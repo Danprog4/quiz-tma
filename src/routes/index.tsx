@@ -106,6 +106,7 @@ function Home() {
     };
   }, [isSubscribed]);
   console.log(userQuizResults, "userQuizResults");
+  console.log(openQuizId, "openQuizId");
 
   return (
     <div
