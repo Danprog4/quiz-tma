@@ -1,13 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { initData as frontInitData } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
-import { setOpenQuizId } from "~/store";
+import { useSnapshot } from "valtio";
+import { setOpenQuizId, store } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 import { FullPageSpinner } from "./Spinner";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isFinished, setIsFinished] = useState(false);
   const [isError, setIsError] = useState(false);
+  const { openQuizId } = useSnapshot(store);
   const trpc = useTRPC();
   const [initData, setInitData] = useState<string | null>(null);
   const [startParam, setStartParam] = useState<string | undefined>(undefined);
@@ -63,6 +65,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         frontInitData.startParam(),
       );
       setOpenQuizId(Number(getStartParam()));
+
+      console.log("openQuizId from AuthProvider", openQuizId);
 
       setIsFinished(true);
     } catch (error) {
