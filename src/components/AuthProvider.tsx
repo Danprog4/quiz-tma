@@ -51,22 +51,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       console.log("frontInitData", frontInitData);
 
-      const getStartParam = async () => {
+      const getStartParam = () => {
         frontInitData.restore();
+        const startParam = frontInitData.startParam();
         console.log(
           "frontInitData.startParam from getStartParam",
-          frontInitData.startParam()?.split("_")[1],
+          startParam?.split("_")[1],
         );
-        return frontInitData.startParam()?.split("_")[1];
+        return startParam?.split("_")[1];
       };
 
       console.log(
         "frontInitData.startParam from AuthProvider",
         frontInitData.startParam(),
       );
-      setOpenQuizId(Number(getStartParam()));
 
-      console.log("openQuizId from AuthProvider", openQuizId);
+      const startParamValue = getStartParam();
+      const quizId = startParamValue ? Number(startParamValue) : null;
+
+      // Проверяем, что получили валидное число
+      if (quizId && !isNaN(quizId)) {
+        setOpenQuizId(quizId);
+      }
+
+      console.log("openQuizId from AuthProvider", quizId);
 
       setIsFinished(true);
     } catch (error) {
