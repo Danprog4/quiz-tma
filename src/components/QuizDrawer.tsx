@@ -167,7 +167,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
   };
 
   const link = useMemo((): string => {
-    return `https://t.me/@quiztma_bot?startapp=quizid_${quizId}`;
+    return `https://t.me/quiztma_bot?startapp=quizid_${quizId}`;
   }, [quizId]);
 
   const text = useMemo((): string => {

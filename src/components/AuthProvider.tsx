@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         );
       });
       await Promise.all(prefetchQuizPromises);
+
       if (frontInitData.startParam) {
         console.log("frontInitData.startParam", frontInitData.startParam());
         setOpenQuizId(Number(frontInitData.startParam()));

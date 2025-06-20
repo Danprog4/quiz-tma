@@ -89,6 +89,9 @@ export default function QuizSlider({ quizes }: { quizes: any }) {
               className={`absolute top-0 left-0 h-full w-full transition-all duration-500 ease-in-out ${
                 isActive ? "z-10" : "z-0"
               }`}
+              onClick={() => {
+                window?.open(quiz.link, "_blank");
+              }}
               style={{
                 transform: `translateX(${
                   isActive
