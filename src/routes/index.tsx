@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useSnapshot } from "valtio";
 import { Drawer } from "vaul";
 import { Ad } from "~/components/Ad";
@@ -50,45 +50,13 @@ function Home() {
   const trpc = useTRPC();
   const { isSubscribed, openQuizId } = useSnapshot(store);
   const { data: news } = useQuery(trpc.main.getNews.queryOptions());
-  const { data: userQuizCoins, refetch: refetchUserResults } = useQuery(
-    trpc.main.getUserResults.queryOptions(),
-  );
+  const { data: userQuizCoins } = useQuery(trpc.main.getUserResults.queryOptions());
 
   console.log(userQuizCoins, "userQuizCoins");
 
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
 
   // Memoized user quiz results calculation
-  const userQuizResults = useMemo(() => {
-    if (!userQuizCoins || !quizes) return new Map();
-
-    const resultsMap = new Map();
-
-    userQuizCoins.forEach((result) => {
-      const quiz = quizes.find((q) => q.id === result.quizId);
-      if (quiz) {
-        const userScore = result.score || 0;
-        const maxScore = quiz.maxScore || 0;
-        const questionCount = quiz.questions?.length || 1;
-        const scorePerQuestion = maxScore / questionCount;
-        const completedQuestions = Math.floor(userScore / scorePerQuestion);
-
-        resultsMap.set(result.quizId, {
-          userScore,
-          completedQuestions,
-          questionCount,
-          hasCompleted: true,
-        });
-      }
-    });
-
-    return resultsMap;
-  }, [userQuizCoins, quizes]);
-
-  // Function to handle quiz completion and refetch user results
-  const handleQuizCompletion = async () => {
-    await refetchUserResults();
-  };
 
   useEffect(() => {
     if (!isSubscribed) {
@@ -105,7 +73,7 @@ function Home() {
       document.body.style.overflow = "";
     };
   }, [isSubscribed]);
-  console.log(userQuizResults, "userQuizResults");
+
   console.log(openQuizId, "openQuizId");
 
   return (
@@ -156,7 +124,9 @@ function Home() {
           </div>
           <div className="mt-3 grid grid-cols-2 gap-5">
             {quizes?.map((quiz) => {
-              const quizResult = userQuizResults.get(quiz.id);
+              const quizResult = userQuizCoins?.find(
+                (result) => result.quizId === quiz.id,
+              );
 
               return (
                 <Drawer.Root
@@ -201,15 +171,17 @@ function Home() {
                             {quiz.title}
                           </h3>
                         </div>
-                        {quizResult?.hasCompleted && (
+                        {quizResult?.correctAnswers && quizResult?.correctAnswers > 0 ? (
                           <div className="absolute top-1/2 left-1/2 flex min-h-[85px] min-w-[85px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 bg-[#28282899] p-4">
                             <div className="flex items-center justify-center bg-[#25CE16] p-2">
                               <Complete />
                             </div>
 
                             <div>Пройдено</div>
-                            {`${quizResult.completedQuestions}/${quizResult.questionCount}`}
+                            {`${quizResult.correctAnswers}/${quiz.questions.length}`}
                           </div>
+                        ) : (
+                          ""
                         )}
                       </div>
                     </div>
@@ -245,7 +217,6 @@ function Home() {
                           quizId={quiz.id}
                           onClose={async () => {
                             setOpenQuizId(null);
-                            await handleQuizCompletion();
                             if (!user?.isMember) {
                               setIsSubscribed(false);
                               console.log("setIsSubscribed(false)");

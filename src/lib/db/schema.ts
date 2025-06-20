@@ -79,6 +79,7 @@ export const quizResultsTable = pgTable("quiz_results", {
     .notNull(),
   score: integer("score").default(0),
   createdAt: timestamp("created_at").defaultNow(),
+  correctAnswers: integer("correct_answers").default(0),
 });
 
 // Types

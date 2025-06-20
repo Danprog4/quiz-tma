@@ -30,6 +30,7 @@ export const resultsRouter = {
       z.object({
         quizId: z.number(),
         score: z.number(),
+        correctAnswers: z.number(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -50,6 +51,7 @@ export const resultsRouter = {
             userId: ctx.userId,
             quizId: input.quizId,
             score: input.score,
+            correctAnswers: input.correctAnswers,
           })
           .returning();
 
@@ -66,6 +68,7 @@ export const resultsRouter = {
           .update(quizResultsTable)
           .set({
             score: input.score,
+            correctAnswers: input.correctAnswers,
           })
           .where(
             and(

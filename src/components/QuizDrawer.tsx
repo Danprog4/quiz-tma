@@ -27,6 +27,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
   const [isFinished, setIsFinished] = useState(false);
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
   const [userQuizResult, setUserQuizResult] = useState(0);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
 
   const handleSubmitAnswer = () => {
@@ -37,6 +38,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
     const selected = currentQuestion.answers.find((a) => a.id === selectedAnswer);
     if (selected?.isCorrect) {
       setIsCorrect(true);
+      setCorrectAnswers((prev) => prev + 1);
       setScore((prev) => prev + (currentQuestion.points || 0));
       hapticFeedback.notificationOccurred("success");
     } else {
@@ -76,6 +78,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
       setIsCorrect(null);
       setTotalQuestions(questions?.length || 0);
       setAnswerSubmitted(false);
+      setCorrectAnswers(0);
     } catch (err) {
       console.error(err);
     }
@@ -91,6 +94,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
       setCurrentQuestionIndex(0);
       setAnswerSubmitted(false);
       setScore(0);
+      setCorrectAnswers(0);
     } catch (err) {
       console.error(err);
     }
@@ -126,18 +130,23 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
         ...old,
         totalScore: old.totalScore + scoreDifference,
       }));
-      queryClient.invalidateQueries({
-        queryKey: trpc.results.getUserResults.queryKey({ userId: user?.id }),
-      });
-      queryClient.invalidateQueries({
-        queryKey: trpc.main.getUserResult.queryKey({ quizId: Number(quizId) }),
+      queryClient.setQueryData(trpc.main.getUserResults.queryKey(), (old: any) => {
+        const existingResult = old.find(
+          (result: any) => result.quizId === Number(quizId),
+        );
+        if (existingResult) {
+          return old.map((result: any) =>
+            result.quizId === Number(quizId)
+              ? { ...result, correctAnswers: correctAnswers }
+              : result,
+          );
+        }
       });
       createResultMutation.mutate({
         quizId: Number(quizId),
         score: score,
+        correctAnswers: correctAnswers,
       });
-
-      console.log(user?.isMember, "user?.isMember");
 
       setIsFinished(true);
     }
