@@ -58,13 +58,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return frontInitData.startParam()?.split("_")[1];
       };
 
-      if (frontInitData.startParam) {
-        console.log(
-          "frontInitData.startParam from AuthProvider",
-          frontInitData.startParam(),
-        );
-        setOpenQuizId(Number(getStartParam()));
-      }
+      console.log(
+        "frontInitData.startParam from AuthProvider",
+        frontInitData.startParam(),
+      );
+      setOpenQuizId(Number(getStartParam()));
 
       setIsFinished(true);
     } catch (error) {
