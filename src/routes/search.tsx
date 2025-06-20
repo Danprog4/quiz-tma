@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useSnapshot } from "valtio";
 import { Drawer } from "vaul";
 import { Coin } from "~/components/Coin";
 import { QuizDrawer } from "~/components/QuizDrawer";
 import { Warning } from "~/components/Warning";
 import { useUser } from "~/hooks/useUser";
-import { setIsSubscribed, setShowWarning } from "~/store";
+import { setIsSubscribed, setOpenQuizId, setShowWarning, store } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 import { Navbar } from "../components/Navbar";
 
@@ -18,8 +19,9 @@ function SearchPage() {
   const trpc = useTRPC();
   const navigate = useNavigate();
   const { user } = useUser();
+  const { openQuizId } = useSnapshot(store);
   const [search, setSearch] = useState("");
-  const [openQuizId, setOpenQuizId] = useState<number | null>(null);
+
   const { data: quizes } = useQuery(trpc.quizzes.getAll.queryOptions());
 
   const filteredQuizes =

@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { initData as frontInitData } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
+import { setOpenQuizId } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 import { FullPageSpinner } from "./Spinner";
 
@@ -44,6 +46,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         );
       });
       await Promise.all(prefetchQuizPromises);
+      if (frontInitData.startParam) {
+        console.log("frontInitData.startParam", frontInitData.startParam());
+        setOpenQuizId(Number(frontInitData.startParam()));
+      }
 
       setIsFinished(true);
     } catch (error) {

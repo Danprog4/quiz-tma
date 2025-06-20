@@ -8,7 +8,6 @@ import { db } from "~/lib/db";
 import { usersTable } from "~/lib/db/schema";
 import { checkTelegramMembership } from "~/lib/utils/checkIsMember";
 import { publicProcedure } from "./init";
-
 export const authRouter = {
   login: publicProcedure
     .input(

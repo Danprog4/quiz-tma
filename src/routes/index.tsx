@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { Drawer } from "vaul";
 import { Ad } from "~/components/Ad";
@@ -10,7 +10,7 @@ import { QuizDrawer } from "~/components/QuizDrawer";
 import Slider from "~/components/Slider";
 import { Warning } from "~/components/Warning";
 import { useUser } from "~/hooks/useUser";
-import { setIsSubscribed, setShowWarning, store } from "~/store";
+import { setIsSubscribed, setOpenQuizId, setShowWarning, store } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
 
 interface Quiz {
@@ -48,9 +48,8 @@ function Home() {
   const navigate = useNavigate();
   const { user } = useUser();
   const trpc = useTRPC();
-  const { isSubscribed } = useSnapshot(store);
+  const { isSubscribed, openQuizId } = useSnapshot(store);
   const { data: news } = useQuery(trpc.main.getNews.queryOptions());
-  const [openQuizId, setOpenQuizId] = useState<number | null>(null);
   const { data: userQuizCoins, refetch: refetchUserResults } = useQuery(
     trpc.main.getUserResults.queryOptions(),
   );
