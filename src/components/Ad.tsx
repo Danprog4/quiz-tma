@@ -119,7 +119,7 @@ export const Ad = () => {
               >
                 <span
                   className="text-center text-base leading-[1.05] font-normal text-white"
-                  onClick={() => handleSubscribe}
+                  onClick={() => handleSubscribe()}
                 >
                   Подписаться
                 </span>
