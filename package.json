@@ -12,6 +12,7 @@
     "ngrok": "ngrok http --domain=$(grep -o \"NGROK_DOMAIN=.*\" .env | cut -d= -f2) 3000"
   },
   "dependencies": {
+    "@grammyjs/conversations": "^2.1.0",
     "@neondatabase/serverless": "^1.0.1",
     "@t3-oss/env-core": "^0.13.4",
     "@tanstack/react-query": "^5.72.0",
