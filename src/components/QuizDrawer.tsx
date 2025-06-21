@@ -545,7 +545,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                 </div>
                 <img
                   className="max-h-36 w-full object-cover"
-                  src={quiz?.imageUrl || "/placeholder.png"}
+                  src={"/wtf.jpg"}
                   alt="Quiz cover"
                 />
                 <div className="absolute inset-0 max-h-46 bg-[linear-gradient(to_top,rgba(0,0,0,0.8),transparent)]" />
