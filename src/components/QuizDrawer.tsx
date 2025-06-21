@@ -123,6 +123,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
         trpc.main.getUserResult.queryKey({ quizId: Number(quizId) }),
         (old: any) => ({
           ...old,
+          correctAnswers: correctAnswers,
           score: score,
         }),
       );
@@ -142,6 +143,9 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
           );
         }
       });
+      // queryClient.invalidateQueries({
+      //   queryKey: trpc.main.getUserResults.queryKey(),
+      // });
       createResultMutation.mutate({
         quizId: Number(quizId),
         score: score,
