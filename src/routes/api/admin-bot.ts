@@ -39,6 +39,7 @@ async function createNews(conversation: Conversation, ctx: Context) {
     await db.insert(newsTable).values({ text, link, imageUrl });
     await ctx.reply("Новость создана успешно");
   } catch (error) {
+    console.error(error, "error");
     await ctx.reply("Не удалось создать новость");
   }
 }
