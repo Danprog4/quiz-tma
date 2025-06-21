@@ -20,6 +20,7 @@ export const usersTable = pgTable("users", {
 export const quizzesTable = pgTable("quizzes", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
+  category: varchar("category", { length: 255 }).notNull(),
   description: text("description"),
   imageUrl: varchar("image_url", { length: 500 }),
   isPopular: boolean("is_popular").default(false),
@@ -37,14 +38,6 @@ export const newsTable = pgTable("news", {
   text: varchar("text").notNull(),
   link: varchar("link", { length: 500 }),
   imageUrl: varchar("image_url", { length: 500 }),
-});
-
-export const categoriesTable = pgTable("categories", {
-  id: serial("id").primaryKey(),
-  quizId: integer("quiz_id")
-    .references(() => quizzesTable.id, { onDelete: "cascade" })
-    .notNull(),
-  name: varchar("name", { length: 100 }).notNull(),
 });
 
 export const questionsTable = pgTable("questions", {
@@ -85,7 +78,7 @@ export const quizResultsTable = pgTable("quiz_results", {
 // Types
 export type User = typeof usersTable.$inferSelect;
 export type Quiz = typeof quizzesTable.$inferSelect;
-export type Category = typeof categoriesTable.$inferSelect;
+
 export type Question = typeof questionsTable.$inferSelect;
 export type Answer = typeof answersTable.$inferSelect;
 export type QuizResult = typeof quizResultsTable.$inferSelect;
@@ -93,7 +86,7 @@ export type QuizResult = typeof quizResultsTable.$inferSelect;
 // Insert types
 export type UserInsert = typeof usersTable.$inferInsert;
 export type QuizInsert = typeof quizzesTable.$inferInsert;
-export type CategoryInsert = typeof categoriesTable.$inferInsert;
+
 export type QuestionInsert = typeof questionsTable.$inferInsert;
 export type AnswerInsert = typeof answersTable.$inferInsert;
 export type QuizResultInsert = typeof quizResultsTable.$inferInsert;

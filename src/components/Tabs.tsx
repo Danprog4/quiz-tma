@@ -16,7 +16,7 @@ type Quiz = {
   title: string;
   imageUrl: string | null;
   isNew: boolean | null;
-  categories: { name: string }[];
+  category: string;
 };
 
 export default function Tabs() {
@@ -35,20 +35,16 @@ export default function Tabs() {
 
   // Получаем уникальные категории из всех квизов (без учета регистра)
   const categories = useMemo(() => {
-    const allCategories = quizes.flatMap(
-      (quiz) => quiz.categories?.map((c: { name: string }) => c.name.toLowerCase()) || [],
-    );
+    const allCategories = quizes.flatMap((quiz) => quiz.category?.toLowerCase() || []);
 
     // Удаляем дубликаты, сохраняем оригинальные названия и сортируем
     const uniqueCategories = new Map<string, string>();
     quizes.forEach((quiz) => {
-      quiz.categories?.forEach((cat: { name: string }) => {
-        const lowerName = cat.name.toLowerCase();
-        if (!uniqueCategories.has(lowerName)) {
-          // Сохраняем оригинальное название (первое встретившееся)
-          uniqueCategories.set(lowerName, cat.name);
-        }
-      });
+      const lowerName = quiz.category.toLowerCase();
+      if (!uniqueCategories.has(lowerName)) {
+        // Сохраняем оригинальное название (первое встретившееся)
+        uniqueCategories.set(lowerName, quiz.category);
+      }
     });
 
     return Array.from(uniqueCategories.values()).sort();
@@ -60,10 +56,8 @@ export default function Tabs() {
   // Фильтруем квизы по активной вкладке (без учета регистра)
   const filteredQuizes = useMemo(() => {
     if (activeTab === "all") return quizes;
-    return quizes.filter((quiz) =>
-      quiz.categories?.some(
-        (cat: { name: string }) => cat.name.toLowerCase() === activeTab.toLowerCase(),
-      ),
+    return quizes.filter(
+      (quiz) => quiz.category?.toLowerCase() === activeTab.toLowerCase(),
     );
   }, [quizes, activeTab]);
 
@@ -157,9 +151,7 @@ export default function Tabs() {
                     >
                       <div className="flex max-h-6 w-full items-center bg-[#010089]">
                         <p className="px-2 py-2 text-xs uppercase">
-                          {quiz.categories.length > 0
-                            ? quiz.categories[0].name.substring(0, 18)
-                            : ""}
+                          {quiz.category.length > 0 ? quiz.category.substring(0, 18) : ""}
                         </p>
                       </div>
                       <img

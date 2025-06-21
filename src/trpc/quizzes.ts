@@ -2,12 +2,7 @@ import { TRPCRouterRecord } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "~/lib/db";
-import {
-  answersTable,
-  categoriesTable,
-  questionsTable,
-  quizzesTable,
-} from "~/lib/db/schema";
+import { answersTable, questionsTable, quizzesTable } from "~/lib/db/schema";
 import { procedure } from "./init";
 
 export const quizzesRouter = {
@@ -22,11 +17,6 @@ export const quizzesRouter = {
     // Для каждого квиза получаем категории и вопросы
     const quizzesWithCategoriesAndQuestions = await Promise.all(
       quizzes.map(async (quiz) => {
-        const categories = await db
-          .select()
-          .from(categoriesTable)
-          .where(eq(categoriesTable.quizId, quiz.id));
-
         const questions = await db
           .select()
           .from(questionsTable)
@@ -34,7 +24,7 @@ export const quizzesRouter = {
 
         return {
           ...quiz,
-          categories,
+
           questions,
         };
       }),
@@ -59,12 +49,6 @@ export const quizzesRouter = {
       throw new Error("Quiz not found");
     }
 
-    // Получаем категории
-    const categories = await db
-      .select()
-      .from(categoriesTable)
-      .where(eq(categoriesTable.quizId, input.id));
-
     // Получаем вопросы с ответами
     const questions = await db
       .select()
@@ -87,7 +71,7 @@ export const quizzesRouter = {
 
     return {
       ...quiz[0],
-      categories,
+
       questions: questionsWithAnswers,
     };
   }),
