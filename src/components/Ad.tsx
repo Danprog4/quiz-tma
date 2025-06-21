@@ -28,13 +28,18 @@ export const Ad = () => {
   }, [isSubscribed]);
 
   const handleSubscribe = () => {
-    openTelegramLink(`https://t.me/netizen_netizen`);
-    setIsSubscribed(true);
-    queryClient.setQueryData(trpc.main.getUser.queryKey(), (old: any) => ({
-      ...old,
-      isMember: true,
-    }));
+    console.log("handleSubscribe");
+    if (openTelegramLink) {
+      console.log("openTelegramLink");
+      openTelegramLink(`https://t.me/netizen_netizen`);
+      setIsSubscribed(true);
+      queryClient.setQueryData(trpc.main.getUser.queryKey(), (old: any) => ({
+        ...old,
+        isMember: true,
+      }));
+    }
   };
+
   if (isSubscribed) return null;
 
   return (
