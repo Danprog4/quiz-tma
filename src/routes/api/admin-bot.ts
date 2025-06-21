@@ -22,28 +22,6 @@ bot.command("start", (ctx) => {
   ctx.reply("Привет, Админ!");
 });
 
-bot.command("createnews", (ctx) => {
-  if (!getIsAdmin(Number(ctx.from?.id))) {
-    ctx.reply("У тебя нет доступа к этому боту");
-    return;
-  }
-
-  ctx.reply(
-    "Введите текст новости, ссылку и ссылку на изображение. Формат: блаблабла,ссылка,ссылка",
-  );
-
-  bot.on("message", async (ctx) => {
-    const response = ctx.message?.text && ctx.message.text.split(",");
-    if (response) {
-      const [text, link, imageUrl] = response;
-      await db.insert(newsTable).values({ text, link, imageUrl });
-      ctx.reply("Новость создана успешно");
-    } else {
-      ctx.reply("Неверный формат");
-    }
-  });
-});
-
 async function createNews(conversation: Conversation, ctx: Context) {
   if (!getIsAdmin(Number(ctx.from?.id))) {
     ctx.reply("У тебя нет доступа к этому боту");
