@@ -33,6 +33,7 @@ async function createNews(conversation: Conversation, ctx: Context) {
   );
 
   const { message } = await conversation.waitFor("message:text");
+  console.log(message);
   const [text, link, imageUrl] = message.text.split(",");
   try {
     await db.insert(newsTable).values({ text, link, imageUrl });
@@ -44,12 +45,12 @@ async function createNews(conversation: Conversation, ctx: Context) {
 
 bot.use(createConversation(createNews, "createNews"));
 
-bot.command("createNews", (ctx) => {
+bot.command("createNews", async (ctx) => {
   if (!getIsAdmin(Number(ctx.from?.id))) {
     ctx.reply("У тебя нет доступа к этому боту");
     return;
   }
-  ctx.conversation.enter("createNews");
+  await ctx.conversation.enter("createNews");
 });
 
 const update = webhookCallback(bot, "std/http");
