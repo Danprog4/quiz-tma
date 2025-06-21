@@ -42,13 +42,21 @@ async function createNews(conversation: Conversation, ctx: Context) {
   }
 }
 
+bot.use(createConversation(createNews, "createNews"));
+
+bot.command("createNews", (ctx) => {
+  if (!getIsAdmin(Number(ctx.from?.id))) {
+    ctx.reply("У тебя нет доступа к этому боту");
+    return;
+  }
+  ctx.conversation.enter("createNews");
+});
+
 const update = webhookCallback(bot, "std/http");
 
 const handleUpdate = async (request: Request) => {
   return await update(request);
 };
-
-bot.use(createConversation(createNews, "createNews"));
 
 export const APIRoute = createAPIFileRoute("/api/admin-bot")({
   GET: async ({ request }) => handleUpdate(request),
