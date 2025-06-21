@@ -588,7 +588,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                       className="flex h-[41px] w-full items-center justify-center bg-[#0100BE] text-lg text-white"
                       onClick={handleStart}
                     >
-                      Пройти
+                      {userQuizResult ? "Пройти ещё раз" : "Пройти"}
                     </button>
                     <button
                       className="flex h-[41px] w-[41px] items-center justify-center bg-[#D9D9D9]"

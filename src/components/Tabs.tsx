@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSnapshot } from "valtio";
 import { Drawer } from "vaul";
 import { Coin } from "~/components/Coin";
@@ -23,6 +23,8 @@ export default function Tabs() {
   const { openQuizId } = useSnapshot(store);
   const [activeTab, setActiveTab] = useState("all"); // 'all' или название категории
   const { user } = useUser();
+  const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
   // Используем tRPC для получения квизов
   const trpc = useTRPC();
@@ -52,6 +54,9 @@ export default function Tabs() {
     return Array.from(uniqueCategories.values()).sort();
   }, [quizes]);
 
+  // Все вкладки (включая "Все")
+  const allTabs = useMemo(() => ["all", ...categories], [categories]);
+
   // Фильтруем квизы по активной вкладке (без учета регистра)
   const filteredQuizes = useMemo(() => {
     if (activeTab === "all") return quizes;
@@ -62,33 +67,64 @@ export default function Tabs() {
     );
   }, [quizes, activeTab]);
 
+  // Обновляем позицию индикатора при изменении активной вкладки
+  useEffect(() => {
+    const activeIndex = allTabs.indexOf(activeTab);
+    const activeTabElement = tabsRef.current[activeIndex];
+
+    if (activeTabElement) {
+      const { offsetLeft, offsetWidth } = activeTabElement;
+      setIndicatorStyle({
+        left: offsetLeft,
+        width: offsetWidth,
+      });
+    }
+  }, [activeTab, allTabs]);
+
   if (loading) {
     return <div className="py-4 text-white">Загрузка...</div>;
   }
 
   return (
     <div className="">
-      <div className="flex overflow-x-auto border-b border-gray-200">
+      <div className="relative flex overflow-x-auto border-b border-gray-200">
+        {/* Анимированный индикатор */}
+        <div
+          className="absolute bottom-0 h-0.5 bg-[#6CED52] transition-all duration-300 ease-in-out"
+          style={{
+            left: `${indicatorStyle.left}px`,
+            width: `${indicatorStyle.width}px`,
+          }}
+        />
+
         {/* Вкладка "Все" */}
         <button
+          ref={(el) => {
+            if (el) {
+              tabsRef.current[0] = el;
+            }
+          }}
           onClick={() => setActiveTab("all")}
-          className={`cursor-pointer px-4 py-2 text-sm font-medium whitespace-nowrap focus:outline-none ${
-            activeTab === "all"
-              ? "border-b-2 border-[#6CED52] text-[#6CED52]"
-              : "text-white hover:text-gray-200"
+          className={`cursor-pointer px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 focus:outline-none ${
+            activeTab === "all" ? "text-[#6CED52]" : "text-white hover:text-gray-200"
           }`}
         >
           Все
         </button>
 
         {/* Вкладки категорий */}
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <button
             key={category}
+            ref={(el) => {
+              if (el) {
+                tabsRef.current[index + 1] = el;
+              }
+            }}
             onClick={() => setActiveTab(category)}
-            className={`cursor-pointer px-4 py-2 text-sm font-medium whitespace-nowrap focus:outline-none ${
+            className={`cursor-pointer px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 focus:outline-none ${
               activeTab.toLowerCase() === category.toLowerCase()
-                ? "border-b-2 border-[#6CED52] text-[#6CED52]"
+                ? "text-[#6CED52]"
                 : "text-white hover:text-gray-200"
             }`}
           >
