@@ -137,6 +137,7 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
     }
     break;
   }
+  await ctx.reply("Квиз создан успешно");
 }
 
 bot.use(createConversation(createQuiz, "createQuiz"));
