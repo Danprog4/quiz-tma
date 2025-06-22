@@ -7,7 +7,7 @@ import {
 import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { Bot, Context, webhookCallback } from "grammy";
 import { db } from "~/lib/db";
-import { newsTable, quizzesTable } from "~/lib/db/schema";
+import { answersTable, newsTable, questionsTable, quizzesTable } from "~/lib/db/schema";
 import { getIsAdmin } from "~/lib/utils/getIsAdmin";
 
 const bot = new Bot<ConversationFlavor<Context>>(process.env.ADMIN_BOT_TOKEN as string);
@@ -78,19 +78,65 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
     collaboratorLink,
   ] = message.text.split(",");
 
-  await db.insert(quizzesTable).values({
-    title,
-    category,
-    description,
-    imageUrl,
-    isPopular: isPopular === "true",
-    isNew: isNew === "true",
-    maxScore: maxScore ? parseInt(maxScore) : 0,
-    collaboratorName: collaboratorName || null,
-    collaboratorLogo: collaboratorLogo || null,
-    collaboratorLink: collaboratorLink || null,
-  });
-  await ctx.reply("Квиз создан успешно");
+  const quiz = await db
+    .insert(quizzesTable)
+    .values({
+      title,
+      category,
+      description,
+      imageUrl,
+      isPopular: isPopular === "true",
+      isNew: isNew === "true",
+      maxScore: maxScore ? parseInt(maxScore) : 0,
+      collaboratorName: collaboratorName || null,
+      collaboratorLogo: collaboratorLogo || null,
+      collaboratorLink: collaboratorLink || null,
+    })
+    .returning();
+
+  for (let i = 0; i < 15; i++) {
+    await ctx.reply(
+      "Квиз создан успешно. Теперь создай вопрос для квиза. В формате: вопрос, тип вопроса, тип презентации, ссылка на медиа, объяснение, баллы",
+    );
+
+    const { message: questionMessage } = await conversation.waitFor("message:text");
+    const [question, questionType, presentationType, mediaUrl, explanation, points] =
+      questionMessage.text.split(",");
+
+    const questionResult = await db
+      .insert(questionsTable)
+      .values({
+        quizId: quiz[0].id,
+        text: question,
+        questionType,
+        presentationType,
+        mediaUrl,
+        explanation,
+        points: points ? parseInt(points) : 1,
+      })
+      .returning();
+    await ctx.reply(
+      "Вопросы созданы успешно. Теперь создай ответы для этого вопроса. В формате: ответ, правильный (true/false)",
+    );
+
+    const { message: answerMessage } = await conversation.waitFor("message:text");
+    const [answer, isCorrect] = answerMessage.text.split(",");
+
+    await db.insert(answersTable).values({
+      questionId: questionResult[0].id,
+      text: answer,
+      isCorrect: isCorrect === "true",
+    });
+    await ctx.reply(
+      "Ответы созданы успешно. Если хочешь добавить ещё ответов, введи 'да', если нет, введи 'нет'",
+    );
+
+    const { message: addAnswerMessage } = await conversation.waitFor("message:text");
+    if (addAnswerMessage.text === "да") {
+      continue;
+    }
+    break;
+  }
 }
 
 bot.use(createConversation(createQuiz, "createQuiz"));
