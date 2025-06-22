@@ -143,9 +143,9 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
           );
         }
       });
-      // queryClient.invalidateQueries({
-      //   queryKey: trpc.main.getUserResults.queryKey(),
-      // });
+      queryClient.invalidateQueries({
+        queryKey: trpc.main.getUserResults.queryKey(),
+      });
       createResultMutation.mutate({
         quizId: Number(quizId),
         score: score,

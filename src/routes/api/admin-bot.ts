@@ -94,31 +94,30 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
     })
     .returning();
 
+  await ctx.reply(
+    "Квиз создан успешно. Теперь создай вопрос для квиза. В формате: вопрос, тип вопроса (for example: text, image, video), ссылка на медиа(или NULL), объяснение, баллы",
+  );
+
+  const { message: questionMessage } = await conversation.waitFor("message:text");
+  const [question, mediaUrl, explanation, points] = questionMessage.text.split(",");
+
+  const questionResult = await db
+    .insert(questionsTable)
+    .values({
+      quizId: quiz[0].id,
+      text: question,
+      questionType: "multiple_choice",
+      mediaUrl,
+      explanation,
+      points: points ? parseInt(points) : 1,
+    })
+    .returning();
+
+  await ctx.reply(
+    "Вопрос создан успешно. Теперь создай ответы для этого вопроса. В формате: ответ, правильный (true/false).",
+  );
+
   for (let i = 0; i < 15; i++) {
-    await ctx.reply(
-      "Квиз создан успешно. Теперь создай вопрос для квиза. В формате: вопрос, тип вопроса, тип презентации, ссылка на медиа, объяснение, баллы",
-    );
-
-    const { message: questionMessage } = await conversation.waitFor("message:text");
-    const [question, questionType, presentationType, mediaUrl, explanation, points] =
-      questionMessage.text.split(",");
-
-    const questionResult = await db
-      .insert(questionsTable)
-      .values({
-        quizId: quiz[0].id,
-        text: question,
-        questionType,
-        presentationType,
-        mediaUrl,
-        explanation,
-        points: points ? parseInt(points) : 1,
-      })
-      .returning();
-    await ctx.reply(
-      "Вопросы созданы успешно. Теперь создай ответы для этого вопроса. В формате: ответ, правильный (true/false)",
-    );
-
     const { message: answerMessage } = await conversation.waitFor("message:text");
     const [answer, isCorrect] = answerMessage.text.split(",");
 
@@ -127,17 +126,16 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
       text: answer,
       isCorrect: isCorrect === "true",
     });
+
     await ctx.reply(
-      "Ответы созданы успешно. Если хочешь добавить ещё ответов, введи 'да', если нет, введи 'нет'",
+      "Ответ создан успешно. Если хочешь добавить ещё ответов, введи 'да', если нет, введи 'нет'",
     );
 
     const { message: addAnswerMessage } = await conversation.waitFor("message:text");
-    if (addAnswerMessage.text === "да") {
-      continue;
+    if (addAnswerMessage.text === "нет") {
+      break;
     }
-    break;
   }
-  await ctx.reply("Квиз создан успешно");
 }
 
 bot.use(createConversation(createQuiz, "createQuiz"));
