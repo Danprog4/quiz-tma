@@ -85,122 +85,163 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
     collaboratorLink,
   ] = parts;
 
-  try {
-    const quiz = await db
-      .insert(quizzesTable)
-      .values({
-        title: title?.trim(),
-        category: category?.trim(),
-        description: description?.trim(),
-        imageUrl: imageUrl?.trim() || null,
-        isPopular: isPopular?.trim() === "true",
-        isNew: isNew?.trim() === "true",
-        maxScore: maxScore ? parseInt(maxScore.trim()) : 0,
-        collaboratorName: collaboratorName?.trim() || null,
-        collaboratorLogo: collaboratorLogo?.trim() || null,
-        collaboratorLink: collaboratorLink?.trim() || null,
-      })
-      .returning();
+  // Собираем все данные квиза перед созданием в БД
+  const quizData = {
+    title: title?.trim(),
+    category: category?.trim(),
+    description: description?.trim(),
+    imageUrl: imageUrl?.trim() || null,
+    isPopular: isPopular?.trim() === "true",
+    isNew: isNew?.trim() === "true",
+    maxScore: maxScore ? parseInt(maxScore.trim()) : 0,
+    collaboratorName: collaboratorName?.trim() || null,
+    collaboratorLogo: collaboratorLogo?.trim() || null,
+    collaboratorLink: collaboratorLink?.trim() || null,
+  };
 
-    await ctx.reply(`Квиз "${title}" создан успешно! ID: ${quiz[0].id}`);
+  // Собираем все вопросы и ответы перед созданием в БД
+  const questionsData: Array<{
+    text: string;
+    presentationType: string;
+    mediaUrl: string | null;
+    explanation: string;
+    points: number;
+    answers: Array<{ text: string; isCorrect: boolean }>;
+  }> = [];
 
-    // Цикл для создания вопросов
-    let questionCount = 0;
+  // Цикл для сбора вопросов
+  let questionCount = 0;
+  while (true) {
+    await ctx.reply(
+      `Создай вопрос #${questionCount + 1} для квиза "${title}". В формате: вопрос, тип презентации (text/photo/video/audio), ссылка на медиа (или пустое), объяснение, баллы`,
+    );
+
+    let questionMessage;
+    let questionParts;
+
+    // Повторяем пока не получим правильный формат
+    while (true) {
+      const response = await conversation.waitFor("message:text");
+      questionMessage = response.message;
+      questionParts = questionMessage.text.split(",");
+
+      if (questionParts.length >= 5) {
+        break;
+      }
+
+      await ctx.reply(
+        "Неверный формат вопроса. Попробуйте снова. Формат: вопрос, тип презентации (text/photo/video/audio), ссылка на медиа (или пустое), объяснение, баллы",
+      );
+    }
+
+    const [questionText, presentationType, mediaUrl, explanation, points] = questionParts;
+
+    const questionData = {
+      text: questionText?.trim(),
+      presentationType: presentationType?.trim(),
+      mediaUrl: mediaUrl?.trim() || null,
+      explanation: explanation?.trim(),
+      points: points ? parseInt(points.trim()) : 1,
+      answers: [] as Array<{ text: string; isCorrect: boolean }>,
+    };
+
+    // Цикл для сбора ответов к текущему вопросу
+    let answerCount = 0;
     while (true) {
       await ctx.reply(
-        `Создай вопрос #${questionCount + 1} для квиза "${title}". В формате: вопрос, тип презентации (text/photo/video/audio), ссылка на медиа (или пустое), объяснение, баллы`,
+        `Создай ответ #${answerCount + 1} для вопроса "${questionText}". В формате: текст ответа, правильный (true/false)`,
       );
 
-      const { message: questionMessage } = await conversation.waitFor("message:text");
-      const questionParts = questionMessage.text.split(",");
+      let answerMessage;
+      let answerParts;
 
-      if (questionParts.length < 5) {
-        await ctx.reply("Неверный формат вопроса. Попробуйте снова.");
-        continue;
-      }
+      // Повторяем пока не получим правильный формат
+      while (true) {
+        const response = await conversation.waitFor("message:text");
+        answerMessage = response.message;
+        answerParts = answerMessage.text.split(",");
 
-      const [questionText, presentationType, mediaUrl, explanation, points] =
-        questionParts;
-
-      try {
-        const questionResult = await db
-          .insert(questionsTable)
-          .values({
-            quizId: quiz[0].id,
-            text: questionText?.trim(),
-            presentationType: presentationType?.trim() as any,
-            questionType: "multiple_choice",
-            mediaUrl: mediaUrl?.trim() || null,
-            explanation: explanation?.trim(),
-            points: points ? parseInt(points.trim()) : 1,
-          })
-          .returning();
-
-        await ctx.reply(`Вопрос #${questionCount + 1} создан успешно!`);
-
-        // Цикл для создания ответов к текущему вопросу
-        let answerCount = 0;
-        while (true) {
-          await ctx.reply(
-            `Создай ответ #${answerCount + 1} для вопроса "${questionText}". В формате: текст ответа, правильный (true/false)`,
-          );
-
-          const { message: answerMessage } = await conversation.waitFor("message:text");
-          const answerParts = answerMessage.text.split(",");
-
-          if (answerParts.length < 2) {
-            await ctx.reply("Неверный формат ответа. Попробуйте снова.");
-            continue;
-          }
-
-          const [answerText, isCorrect] = answerParts;
-
-          try {
-            await db.insert(answersTable).values({
-              questionId: questionResult[0].id,
-              text: answerText?.trim(),
-              isCorrect: isCorrect?.trim() === "true",
-            });
-
-            answerCount++;
-            await ctx.reply(`Ответ #${answerCount} создан успешно!`);
-
-            await ctx.reply(
-              "Добавить ещё один ответ к этому вопросу? Введи 'да' или 'нет'",
-            );
-
-            const { message: addAnswerMessage } =
-              await conversation.waitFor("message:text");
-            if (addAnswerMessage.text.toLowerCase() !== "да") {
-              break;
-            }
-          } catch (error) {
-            console.error("Error creating answer:", error);
-            await ctx.reply("Ошибка при создании ответа. Попробуйте снова.");
-          }
-        }
-
-        questionCount++;
-        await ctx.reply(
-          `Вопрос #${questionCount} завершён. Добавить ещё один вопрос к квизу "${title}"? Введи 'да' или 'нет'`,
-        );
-
-        const { message: addQuestionMessage } =
-          await conversation.waitFor("message:text");
-        if (addQuestionMessage.text.toLowerCase() !== "да") {
-          await ctx.reply(
-            `Квиз "${title}" создан полностью! Всего вопросов: ${questionCount}`,
-          );
+        if (answerParts.length >= 2) {
           break;
         }
-      } catch (error) {
-        console.error("Error creating question:", error);
-        await ctx.reply("Ошибка при создании вопроса. Попробуйте снова.");
+
+        await ctx.reply(
+          "Неверный формат ответа. Попробуйте снова. Формат: текст ответа, правильный (true/false)",
+        );
+      }
+
+      const [answerText, isCorrect] = answerParts;
+
+      questionData.answers.push({
+        text: answerText?.trim(),
+        isCorrect: isCorrect?.trim() === "true",
+      });
+
+      answerCount++;
+      await ctx.reply(`Ответ #${answerCount} добавлен!`);
+
+      await ctx.reply("Добавить ещё один ответ к этому вопросу? Введи 'да' или 'нет'");
+
+      const { message: addAnswerMessage } = await conversation.waitFor("message:text");
+      if (addAnswerMessage.text.toLowerCase() !== "да") {
+        break;
       }
     }
+
+    questionsData.push(questionData);
+    questionCount++;
+
+    await ctx.reply(
+      `Вопрос #${questionCount} собран. Добавить ещё один вопрос к квизу "${title}"? Введи 'да' или 'нет'`,
+    );
+
+    const { message: addQuestionMessage } = await conversation.waitFor("message:text");
+    if (addQuestionMessage.text.toLowerCase() !== "да") {
+      break;
+    }
+  }
+
+  // Теперь создаем всё в базе данных одной транзакцией
+  try {
+    await ctx.reply("Сохраняю квиз в базу данных...");
+
+    // Создаем квиз
+    const quiz = await db.insert(quizzesTable).values(quizData).returning();
+
+    // Создаем вопросы и ответы
+    for (const questionData of questionsData) {
+      const question = await db
+        .insert(questionsTable)
+        .values({
+          quizId: quiz[0].id,
+          text: questionData.text,
+          presentationType: questionData.presentationType as any,
+          questionType: "multiple_choice",
+          mediaUrl: questionData.mediaUrl,
+          explanation: questionData.explanation,
+          points: questionData.points,
+        })
+        .returning();
+
+      // Создаем ответы для этого вопроса
+      for (const answerData of questionData.answers) {
+        await db.insert(answersTable).values({
+          questionId: question[0].id,
+          text: answerData.text,
+          isCorrect: answerData.isCorrect,
+        });
+      }
+    }
+
+    await ctx.reply(
+      `✅ Квиз "${title}" создан полностью!\n` +
+        `ID квиза: ${quiz[0].id}\n` +
+        `Всего вопросов: ${questionsData.length}\n` +
+        `Всего ответов: ${questionsData.reduce((sum, q) => sum + q.answers.length, 0)}`,
+    );
   } catch (error) {
     console.error("Error creating quiz:", error);
-    await ctx.reply("Ошибка при создании квиза. Попробуйте снова.");
+    await ctx.reply("❌ Ошибка при создании квиза в базе данных. Попробуйте снова.");
   }
 }
 
