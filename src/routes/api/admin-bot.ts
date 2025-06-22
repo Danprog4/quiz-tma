@@ -245,14 +245,14 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
   }
 }
 
-bot.use(createConversation(createQuiz, "createQuiz"));
+bot.use(createConversation(createQuiz, "create_quiz"));
 
-bot.command("createQuiz", async (ctx) => {
+bot.command("create_quiz", async (ctx) => {
   if (!getIsAdmin(Number(ctx.from?.id))) {
     ctx.reply("У тебя нет доступа к этому боту");
     return;
   }
-  await ctx.conversation.enter("createQuiz");
+  await ctx.conversation.enter("create_quiz");
 });
 
 const update = webhookCallback(bot, "std/http");
