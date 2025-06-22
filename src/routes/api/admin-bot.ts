@@ -99,18 +99,20 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
   // Цикл для создания вопросов
   while (true) {
     await ctx.reply(
-      "Создай вопрос для квиза. В формате: вопрос, тип вопроса (for example: text, image, video), ссылка на медиа(или NULL), объяснение, баллы",
+      "Создай вопрос для квиза. В формате: вопрос, тип вопроса (for example: text, image, video), ссылка на медиа(или ''), объяснение, баллы",
     );
 
     const { message: questionMessage } = await conversation.waitFor("message:text");
-    const [question, mediaUrl, explanation, points] = questionMessage.text.split(",");
+    const [question, questionType, mediaUrl, explanation, points] =
+      questionMessage.text.split(",");
 
     const questionResult = await db
       .insert(questionsTable)
       .values({
         quizId: quiz[0].id,
         text: question,
-        questionType: "multiple_choice",
+        presentationType: "multiple_choice",
+        questionType,
         mediaUrl,
         explanation,
         points: points ? parseInt(points) : 1,
