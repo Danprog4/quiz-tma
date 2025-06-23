@@ -408,6 +408,66 @@ bot.command("update_quiz", async (ctx) => {
   await ctx.conversation.enter("update_quiz");
 });
 
+async function deleteQuiz(conversation: Conversation, ctx: Context) {
+  if (!getIsAdmin(Number(ctx.from?.id))) {
+    ctx.reply("У тебя нет доступа к этому боту");
+    return;
+  }
+
+  await ctx.reply("Введите ID или название квиза, который хотите удалить:");
+
+  let quiz;
+  while (true) {
+    const { message } = await conversation.waitFor("message:text");
+    const response = message.text.toLowerCase().trim();
+
+    const idAsNumber = parseInt(response);
+    const isValidId = !isNaN(idAsNumber);
+
+    quiz = await db.query.quizzesTable.findFirst({
+      where: isValidId
+        ? eq(quizzesTable.id, idAsNumber)
+        : eq(quizzesTable.title, response),
+    });
+
+    if (!quiz) {
+      await ctx.reply("Квиз не найден, попробуйте ввести ID или название еще раз");
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  if (!quiz) {
+    await ctx.reply("Что-то пошло не так, попробуйте снова");
+    return;
+  }
+
+  await db.delete(quizzesTable).where(eq(quizzesTable.id, quiz.id));
+  await ctx.reply("Квиз удален");
+}
+
+bot.use(createConversation(deleteQuiz, "delete_quiz"));
+
+bot.command("delete_quiz", async (ctx) => {
+  if (!getIsAdmin(Number(ctx.from?.id))) {
+    ctx.reply("У тебя нет доступа к этому боту");
+    return;
+  }
+  await ctx.conversation.enter("delete_quiz");
+});
+
+bot.command("get_quizzes", async (ctx) => {
+  if (!getIsAdmin(Number(ctx.from?.id))) {
+    ctx.reply("У тебя нет доступа к этому боту");
+    return;
+  }
+
+  await ctx.api.sendChatAction(ctx.chat.id, "typing");
+  const quizzes = await db.query.quizzesTable.findMany();
+  await ctx.reply(quizzes.map((quiz) => `${quiz.id}. ${quiz.title}`).join("\n"));
+});
+
 const update = webhookCallback(bot, "std/http");
 
 const handleUpdate = async (request: Request) => {
