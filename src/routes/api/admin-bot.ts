@@ -429,6 +429,16 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
   }
 }
 
+bot.use(createConversation(updateQuiz, "update_quiz"));
+
+bot.command("update_quiz", async (ctx) => {
+  if (!getIsAdmin(Number(ctx.from?.id))) {
+    ctx.reply("У тебя нет доступа к этому боту");
+    return;
+  }
+  await ctx.conversation.enter("update_quiz");
+});
+
 const update = webhookCallback(bot, "std/http");
 
 const handleUpdate = async (request: Request) => {
