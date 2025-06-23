@@ -156,7 +156,7 @@ export default function Tabs() {
                       </div>
                       <img
                         className="h-46 w-full object-cover"
-                        src={"/wtf.jpg"}
+                        src={quiz.imageUrl || "/wtf.jpg"}
                         alt={quiz.title}
                         width={1000}
                         height={100}

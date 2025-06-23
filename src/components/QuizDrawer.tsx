@@ -738,8 +738,8 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                     </svg>
                   </div>
                   <img
-                    className="max-h-36 w-full object-cover"
-                    src={"/wtf.jpg"}
+                    className="max-h-36 min-h-36 w-full object-cover"
+                    src={quiz.imageUrl || "/wtf.jpg"}
                     alt="Quiz cover"
                   />
                   <div className="absolute inset-0 max-h-46 bg-[linear-gradient(to_top,rgba(0,0,0,0.8),transparent)]" />
