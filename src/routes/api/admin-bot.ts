@@ -269,8 +269,14 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
     const { message } = await conversation.waitFor("message:text");
     const response = message.text;
 
+    // Пытаемся парсить как число, если не получается - ищем по названию
+    const idAsNumber = parseInt(response);
+    const isValidId = !isNaN(idAsNumber);
+
     quiz = await db.query.quizzesTable.findFirst({
-      where: eq(quizzesTable.id, Number(response)) || eq(quizzesTable.title, response),
+      where: isValidId
+        ? eq(quizzesTable.id, idAsNumber)
+        : eq(quizzesTable.title, response),
     });
 
     if (!quiz) {
