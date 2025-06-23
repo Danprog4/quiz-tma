@@ -307,7 +307,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           "Название квиза обновлено. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
         );
         const { message: titleContinue } = await conversation.waitFor("message:text");
-        if (titleContinue.text.toLowerCase() !== "да") {
+        if (titleContinue.text.toLowerCase() === "нет") {
           break;
         }
       case "описание":
@@ -322,7 +322,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
         );
         const { message: descriptionContinue } =
           await conversation.waitFor("message:text");
-        if (descriptionContinue.text.toLowerCase() !== "да") {
+        if (descriptionContinue.text.toLowerCase() === "нет") {
           break;
         }
       case "ссылка на изображение":
@@ -336,7 +336,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           "Ссылка на изображение квиза обновлена. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
         );
         const { message: imageContinue } = await conversation.waitFor("message:text");
-        if (imageContinue.text.toLowerCase() !== "да") {
+        if (imageContinue.text.toLowerCase() === "нет") {
           break;
         }
       case "популярность":
@@ -350,7 +350,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           "Популярность квиза обновлена. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
         );
         const { message: popularContinue } = await conversation.waitFor("message:text");
-        if (popularContinue.text.toLowerCase() !== "да") {
+        if (popularContinue.text.toLowerCase() === "нет") {
           break;
         }
       case "новый":
@@ -364,7 +364,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           "Новизна квиза обновлена. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
         );
         const { message: newIsNewContinue } = await conversation.waitFor("message:text");
-        if (newIsNewContinue.text.toLowerCase() !== "да") {
+        if (newIsNewContinue.text.toLowerCase() === "нет") {
           break;
         }
       case "максимальный балл":
@@ -378,7 +378,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           "Максимальный балл квиза обновлен. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
         );
         const { message: maxScoreContinue } = await conversation.waitFor("message:text");
-        if (maxScoreContinue.text.toLowerCase() !== "да") {
+        if (maxScoreContinue.text.toLowerCase() === "нет") {
           break;
         }
       case "имя коллаборатора":
@@ -394,7 +394,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
         );
         const { message: collaboratorNameContinue } =
           await conversation.waitFor("message:text");
-        if (collaboratorNameContinue.text.toLowerCase() !== "да") {
+        if (collaboratorNameContinue.text.toLowerCase() === "нет") {
           break;
         }
       case "логотип коллаборатора":
@@ -410,7 +410,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
         );
         const { message: collaboratorLogoContinue } =
           await conversation.waitFor("message:text");
-        if (collaboratorLogoContinue.text.toLowerCase() !== "да") {
+        if (collaboratorLogoContinue.text.toLowerCase() === "нет") {
           break;
         }
       case "ссылка коллаборатора":
@@ -426,7 +426,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
         );
         const { message: collaboratorLinkContinue } =
           await conversation.waitFor("message:text");
-        if (collaboratorLinkContinue.text.toLowerCase() !== "да") {
+        if (collaboratorLinkContinue.text.toLowerCase() === "нет") {
           break;
         }
       default:
