@@ -267,7 +267,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
   let quiz;
   while (true) {
     const { message } = await conversation.waitFor("message:text");
-    const response = message.text;
+    const response = message.text.toLowerCase().trim();
 
     // Пытаемся парсить как число, если не получается - ищем по названию
     const idAsNumber = parseInt(response);
@@ -293,7 +293,7 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
     );
 
     const { message } = await conversation.waitFor("message:text");
-    const update = message.text;
+    const update = message.text.toLowerCase().trim();
 
     if (update === "нет") {
       break;
