@@ -9,6 +9,7 @@ import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
 import { FullPageSpinner } from "~/components/Spinner";
 import { useUser } from "~/hooks/useUser";
 import { useTRPC } from "~/trpc/init/react";
+import { Retros } from "./Retros";
 
 interface QuizDrawerProps {
   quizId: number;
@@ -227,6 +228,17 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
             className="h-full min-h-screen w-full bg-[#212121] pb-32 text-white"
           >
             <main className="mx-4 flex flex-col pt-8">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.1,
+                  duration: 0.3,
+                  ease: "easeOut",
+                }}
+              >
+                <Retros />
+              </motion.div>
               <section>
                 <motion.div
                   initial={{
@@ -418,6 +430,17 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
             className="h-full min-h-screen w-full bg-[#212121] pb-32 text-white"
           >
             <main className="mx-4 flex flex-col pt-8">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.1,
+                  duration: 0.3,
+                  ease: "easeOut",
+                }}
+              >
+                <Retros />
+              </motion.div>
               <section>
                 <motion.div
                   initial={{
@@ -595,7 +618,16 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
             <main className="mx-4 flex flex-col pt-8">
               <section>
                 <div className="relative w-full border-2 border-white bg-[#C0C0C0]">
-                  <div className="flex h-6 w-full items-center justify-between bg-[#010089] py-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.1,
+                      duration: 0.3,
+                      ease: "easeOut",
+                    }}
+                    className="flex h-6 w-full items-center justify-between bg-[#010089] py-4"
+                  >
                     <svg
                       className="mx-2"
                       width="55"
@@ -736,7 +768,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                         fill="#1D1D1B"
                       />
                     </svg>
-                  </div>
+                  </motion.div>
                   <img
                     className="max-h-36 min-h-36 w-full object-cover"
                     src={quiz.imageUrl || "/wtf.jpg"}
