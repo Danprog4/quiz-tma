@@ -289,11 +289,15 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
 
   while (true) {
     await ctx.reply(
-      "Введите что хотите обновить. Например, название, описание, ссылка на изображение, популярность, новый, максимальный балл, имя коллаборатора, логотип коллаборатора, ссылка коллаборатора. Можно ввести только одно поле",
+      "Введите что хотите обновить. Если больше не хотите обновлять, введите 'нет'. Например, название, описание, ссылка на изображение, популярность, новый, максимальный балл, имя коллаборатора, логотип коллаборатора, ссылка коллаборатора. Можно ввести только одно поле",
     );
 
     const { message } = await conversation.waitFor("message:text");
     const update = message.text;
+
+    if (update === "нет") {
+      break;
+    }
 
     switch (update) {
       case "название":
@@ -303,13 +307,9 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ title: newTitle.text })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Название квиза обновлено. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: titleContinue } = await conversation.waitFor("message:text");
-        if (titleContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Название квиза обновлено");
+        break;
+
       case "описание":
         await ctx.reply("Введите новое описание квиза");
         const { message: newDescription } = await conversation.waitFor("message:text");
@@ -317,14 +317,9 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ description: newDescription.text })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Описание квиза обновлено. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: descriptionContinue } =
-          await conversation.waitFor("message:text");
-        if (descriptionContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Описание квиза обновлено");
+        break;
+
       case "ссылка на изображение":
         await ctx.reply("Введите новую ссылку на изображение");
         const { message: newImageUrl } = await conversation.waitFor("message:text");
@@ -332,13 +327,9 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ imageUrl: newImageUrl.text })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Ссылка на изображение квиза обновлена. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: imageContinue } = await conversation.waitFor("message:text");
-        if (imageContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Ссылка на изображение квиза обновлена");
+        break;
+
       case "популярность":
         await ctx.reply("Введите новую популярность квиза");
         const { message: newIsPopular } = await conversation.waitFor("message:text");
@@ -346,13 +337,9 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ isPopular: newIsPopular.text === "true" })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Популярность квиза обновлена. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: popularContinue } = await conversation.waitFor("message:text");
-        if (popularContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Популярность квиза обновлена");
+        break;
+
       case "новый":
         await ctx.reply("Введите новую новизну квиза");
         const { message: newIsNew } = await conversation.waitFor("message:text");
@@ -360,13 +347,9 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ isNew: newIsNew.text === "true" })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Новизна квиза обновлена. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: newIsNewContinue } = await conversation.waitFor("message:text");
-        if (newIsNewContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Новизна квиза обновлена");
+        break;
+
       case "максимальный балл":
         await ctx.reply("Введите новый максимальный балл");
         const { message: newMaxScore } = await conversation.waitFor("message:text");
@@ -374,13 +357,9 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ maxScore: parseInt(newMaxScore.text) })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Максимальный балл квиза обновлен. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: maxScoreContinue } = await conversation.waitFor("message:text");
-        if (maxScoreContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Максимальный балл квиза обновлен");
+        break;
+
       case "имя коллаборатора":
         await ctx.reply("Введите новое имя коллаборатора");
         const { message: newCollaboratorName } =
@@ -389,14 +368,9 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ collaboratorName: newCollaboratorName.text })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Имя коллаборатора квиза обновлено. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: collaboratorNameContinue } =
-          await conversation.waitFor("message:text");
-        if (collaboratorNameContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Имя коллаборатора квиза обновлено");
+        break;
+
       case "логотип коллаборатора":
         await ctx.reply("Введите новый логотип коллаборатора");
         const { message: newCollaboratorLogo } =
@@ -405,14 +379,9 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ collaboratorLogo: newCollaboratorLogo.text })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Логотип коллаборатора квиза обновлен. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: collaboratorLogoContinue } =
-          await conversation.waitFor("message:text");
-        if (collaboratorLogoContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Логотип коллаборатора квиза обновлен");
+        break;
+
       case "ссылка коллаборатора":
         await ctx.reply("Введите новую ссылку коллаборатора");
         const { message: newCollaboratorLink } =
@@ -421,14 +390,8 @@ async function updateQuiz(conversation: Conversation, ctx: Context) {
           .update(quizzesTable)
           .set({ collaboratorLink: newCollaboratorLink.text })
           .where(eq(quizzesTable.id, quiz.id));
-        await ctx.reply(
-          "Ссылка коллаборатора квиза обновлена. Напишите 'да' если хотите обновить что-то ещё или 'нет' если хотите закончить",
-        );
-        const { message: collaboratorLinkContinue } =
-          await conversation.waitFor("message:text");
-        if (collaboratorLinkContinue.text.toLowerCase() === "нет") {
-          break;
-        }
+        await ctx.reply("Ссылка коллаборатора квиза обновлена");
+        break;
       default:
         await ctx.reply("Неверный формат, попробуйте снова");
     }
