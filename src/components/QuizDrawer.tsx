@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { hapticFeedback, shareURL } from "@telegram-apps/sdk";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Coin } from "~/components/Coin";
 import CustomAudioPlayer from "~/components/CustomAudioPlayer";
 import { CustomVideoPlayer } from "~/components/CustomVideoPlayer";
@@ -27,7 +27,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
   const [isMainVisible, setMainVisible] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [answerSubmitted, setAnswerSubmitted] = useState(false);
-  const [userQuizResult, setUserQuizResult] = useState(0);
+
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
 
@@ -48,7 +48,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
     }
   };
 
-  const { data: userQuizCoins } = useQuery(
+  const { data: userQuizResults } = useQuery(
     trpc.main.getUserResult.queryOptions({ quizId: Number(quizId) }),
   );
 
@@ -57,15 +57,6 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
   const { data: quiz } = useQuery(
     trpc.quizzes.getById.queryOptions({ id: Number(quizId) }),
   );
-
-  const questionPrice = quiz?.questions.length
-    ? quiz.maxScore! / quiz.questions.length
-    : 0;
-
-  useEffect(() => {
-    const userQuizResult = userQuizCoins ? userQuizCoins?.score! / questionPrice! : 0;
-    setUserQuizResult(userQuizResult);
-  }, [userQuizCoins, questionPrice]);
 
   const { data: questions } = useQuery(
     trpc.quizzes.getQuestions.queryOptions({ quizId: Number(quizId) }),
@@ -110,7 +101,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
       setIsCorrect(null);
       setAnswerSubmitted(false);
     } else {
-      const oldScore = userQuizCoins?.score || 0;
+      const oldScore = userQuizResults?.score || 0;
 
       if (oldScore >= score) {
         setIsFinished(true);
@@ -133,9 +124,12 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
         totalScore: old.totalScore + scoreDifference,
       }));
       queryClient.setQueryData(trpc.main.getUserResults.queryKey(), (old: any) => {
+        if (!old) return [];
+
         const existingResult = old.find(
           (result: any) => result.quizId === Number(quizId),
         );
+
         if (existingResult) {
           return old.map((result: any) =>
             result.quizId === Number(quizId)
@@ -367,6 +361,9 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                           queryKey: trpc.main.getUserResult.queryKey({
                             quizId: Number(quizId),
                           }),
+                        });
+                        queryClient.invalidateQueries({
+                          queryKey: trpc.main.getUserResults.queryKey(),
                         });
                         navigate({ to: "/" });
                       }}
@@ -764,7 +761,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                     </div>
                     <p className="text-md text-gray-800">{quiz?.description}</p>
 
-                    {userQuizResult ? (
+                    {userQuizResults?.correctAnswers ? (
                       <div className="my-4 flex justify-center">
                         <svg
                           className="mr-2"
@@ -781,7 +778,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                           />
                         </svg>
                         <p className="text-lg text-black">
-                          ПРОЙДЕНО {userQuizResult}/{questions?.length}
+                          ПРОЙДЕНО {userQuizResults?.correctAnswers}/{questions?.length}
                         </p>
                       </div>
                     ) : (
@@ -796,7 +793,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                         whileHover={{ scale: 1.02 }}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       >
-                        {userQuizResult ? "Пройти ещё раз" : "Пройти"}
+                        {userQuizResults?.correctAnswers ? "Пройти ещё раз" : "Пройти"}
                       </motion.button>
                       <button
                         className="flex h-[41px] w-[41px] items-center justify-center bg-[#D9D9D9]"

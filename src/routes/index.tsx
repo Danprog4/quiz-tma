@@ -50,11 +50,18 @@ function Home() {
   const trpc = useTRPC();
   const { isSubscribed, openQuizId } = useSnapshot(store);
   const { data: news } = useQuery(trpc.main.getNews.queryOptions());
-  const { data: userQuizCoins } = useQuery(trpc.main.getUserResults.queryOptions());
+  const { data: userQuizResults } = useQuery(trpc.main.getUserResults.queryOptions());
 
-  console.log(userQuizCoins, "userQuizCoins");
+  console.log(userQuizResults?.[0]?.correctAnswers, "userQuizResults");
 
   const { data: quizes, isLoading, error } = useQuery(trpc.quizzes.getAll.queryOptions());
+
+  const quizzedWithResults = quizes?.map((quiz) => {
+    const quizResult = userQuizResults?.find(
+      (result) => result.quizId === quiz.id && result.userId === user?.id,
+    )?.correctAnswers;
+    return { ...quiz, result: quizResult };
+  });
 
   // Memoized user quiz results calculation
 
@@ -123,11 +130,7 @@ function Home() {
             </div>
           </div>
           <div className="mt-3 grid grid-cols-2 gap-5">
-            {quizes?.map((quiz) => {
-              const quizResult = userQuizCoins?.find(
-                (result) => result.quizId === quiz.id,
-              );
-
+            {quizzedWithResults?.map((quiz) => {
               return (
                 <Drawer.Root
                   noBodyStyles
@@ -171,14 +174,14 @@ function Home() {
                             {quiz.title}
                           </h3>
                         </div>
-                        {quizResult?.correctAnswers && quizResult?.correctAnswers > 0 ? (
+                        {quiz.result && quiz.result > 0 ? (
                           <div className="absolute top-1/2 left-1/2 flex min-h-[85px] min-w-[85px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-1 bg-[#28282899] p-4">
                             <div className="flex items-center justify-center bg-[#25CE16] p-2">
                               <Complete />
                             </div>
 
                             <div>Пройдено</div>
-                            {`${quizResult.correctAnswers}/${quiz.questions.length}`}
+                            {`${quiz.result}/${quiz.questions.length}`}
                           </div>
                         ) : (
                           ""

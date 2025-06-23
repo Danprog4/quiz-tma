@@ -236,7 +236,7 @@ const CustomAudioPlayer = ({ src }: { src: string }) => {
             fill="white"
           />
         </svg>
-        <div className="mt-2 flex items-center justify-end">
+        <div className="mb-2 flex items-center justify-end">
           <span className="text-sm text-white">
             {formatTime(currentTime)} / {formatTime(duration)}
           </span>
