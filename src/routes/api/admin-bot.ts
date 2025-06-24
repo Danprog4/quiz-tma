@@ -77,6 +77,16 @@ async function deleteNews(conversation: Conversation, ctx: Context) {
   await ctx.reply("Новость удалена");
 }
 
+bot.command("get_news", async (ctx) => {
+  if (!getIsAdmin(Number(ctx.from?.id))) {
+    ctx.reply("У тебя нет доступа к этому боту");
+    return;
+  }
+
+  const news = await db.query.newsTable.findMany();
+  await ctx.reply(news.map((news) => `${news.id}. ${news.text}`).join("\n"));
+});
+
 bot.use(createConversation(deleteNews, "delete_news"));
 
 bot.command("delete_news", async (ctx) => {
