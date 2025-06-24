@@ -8,6 +8,7 @@ import { db } from "~/lib/db";
 import { usersTable } from "~/lib/db/schema";
 import { checkTelegramMembership } from "~/lib/utils/checkIsMember";
 import { publicProcedure } from "./init";
+
 export const authRouter = {
   login: publicProcedure
     .input(
@@ -38,22 +39,12 @@ export const authRouter = {
         });
       }
 
-      let parsedData;
-      try {
-        console.log("Parsing init data...");
-        parsedData = parse(input.initData);
-        console.log("Init data parsed successfully:", {
-          hasUser: !!parsedData.user,
-          userId: parsedData.user?.id,
-          userName: parsedData.user?.first_name,
-        });
-      } catch (error) {
-        console.error("Init data parsing error:", error);
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Failed to parse init data",
-        });
-      }
+      const parsedData = parse(input.initData);
+      console.log("Init data parsed successfully:", {
+        hasUser: !!parsedData.user,
+        userId: parsedData.user?.id,
+        userName: parsedData.user?.first_name,
+      });
 
       const telegramUser = parsedData.user;
       const referrerId = input.startParam?.split("_")[1];
@@ -68,21 +59,12 @@ export const authRouter = {
       }
 
       console.log("Creating JWT token for user:", telegramUser.id);
-      let token;
-      try {
-        token = await new SignJWT({ userId: telegramUser.id })
-          .setProtectedHeader({ alg: "HS256" })
-          .setIssuedAt()
-          .setExpirationTime("1y")
-          .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
-        console.log("JWT token created successfully");
-      } catch (error) {
-        console.error("JWT creation error:", error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create authentication token",
-        });
-      }
+      const token = await new SignJWT({ userId: telegramUser.id })
+        .setProtectedHeader({ alg: "HS256" })
+        .setIssuedAt()
+        .setExpirationTime("1y")
+        .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
+      console.log("JWT token created successfully");
 
       const event = getEvent();
       console.log("Setting auth cookie...");
@@ -101,23 +83,14 @@ export const authRouter = {
       }
 
       console.log("Checking for existing user in database...");
-      let existingUser;
-      try {
-        existingUser = await db.query.usersTable.findFirst({
-          where: eq(usersTable.id, telegramUser.id),
-        });
-        console.log("Database query result:", {
-          userExists: !!existingUser,
-          userId: existingUser?.id,
-          userName: existingUser?.name,
-        });
-      } catch (error) {
-        console.error("Database query error:", error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Database error occurred",
-        });
-      }
+      const existingUser = await db.query.usersTable.findFirst({
+        where: eq(usersTable.id, telegramUser.id),
+      });
+      console.log("Database query result:", {
+        userExists: !!existingUser,
+        userId: existingUser?.id,
+        userName: existingUser?.name,
+      });
 
       const name =
         telegramUser.first_name +
@@ -125,62 +98,41 @@ export const authRouter = {
       console.log("User display name:", name);
 
       console.log("Checking Telegram membership...");
-      let isMember = false;
-      try {
-        isMember = await checkTelegramMembership({
-          userId: telegramUser.id,
-          chatId: "-1002741921121",
-        });
-        console.log("Membership check result:", isMember);
-      } catch (error) {
-        console.error("Telegram membership check error:", error);
-        // Default to false if membership check fails
-        isMember = false;
-        console.log("Defaulting membership to false due to error");
-      }
+      const isMember = await checkTelegramMembership({
+        userId: telegramUser.id,
+        chatId: "-1002741921121",
+      });
+      console.log("Membership check result:", isMember);
 
       if (!existingUser) {
         console.log("Creating new user...");
-        try {
-          const newUser = await db
-            .insert(usersTable)
-            .values({
-              id: telegramUser.id,
-              name,
-              photoUrl: telegramUser.photo_url || null,
-              isMember,
-            })
-            .returning();
+        const newUser = await db
+          .insert(usersTable)
+          .values({
+            id: telegramUser.id,
+            name,
+            photoUrl: telegramUser.photo_url || null,
+            isMember,
+          })
+          .returning();
 
-          console.log("New user created successfully:", {
-            id: newUser[0]?.id,
-            name: newUser[0]?.name,
-            isMember: newUser[0]?.isMember,
-          });
-          console.log("=== LOGIN MUTATION END (NEW USER) ===");
-          return newUser[0];
-        } catch (error) {
-          console.error("User creation error:", error);
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to create user",
-          });
-        }
+        console.log("New user created successfully:", {
+          id: newUser[0]?.id,
+          name: newUser[0]?.name,
+          isMember: newUser[0]?.isMember,
+        });
+        console.log("=== LOGIN MUTATION END (NEW USER) ===");
+        return newUser[0];
       }
 
       console.log("Updating existing user membership status...");
-      try {
-        await db
-          .update(usersTable)
-          .set({
-            isMember,
-          })
-          .where(eq(usersTable.id, telegramUser.id));
-        console.log("User membership status updated successfully");
-      } catch (error) {
-        console.error("User update error:", error);
-        // Continue execution - update failure shouldn't break the login
-      }
+      await db
+        .update(usersTable)
+        .set({
+          isMember,
+        })
+        .where(eq(usersTable.id, telegramUser.id));
+      console.log("User membership status updated successfully");
 
       console.log("=== LOGIN MUTATION END (EXISTING USER) ===");
       return existingUser;

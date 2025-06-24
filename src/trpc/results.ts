@@ -6,7 +6,6 @@ import { quizResultsTable, usersTable } from "~/lib/db/schema";
 import { procedure } from "./init";
 
 export const resultsRouter = {
-  // Получить результаты пользователя
   getUserResults: procedure
     .input(z.object({ userId: z.number() }))
     .query(async ({ input, ctx }) => {
@@ -20,7 +19,7 @@ export const resultsRouter = {
         .where(eq(quizResultsTable.userId, input.userId));
 
       return results.map((result) => ({
-        quiz_id: result.quizId,
+        quizId: result.quizId,
         score: result.score,
       }));
     }),
@@ -44,7 +43,11 @@ export const resultsRouter = {
         ),
       });
 
-      if (!oldResult || !oldResult.score) {
+      const user = await db.query.usersTable.findFirst({
+        where: eq(usersTable.id, ctx.userId),
+      });
+
+      if (!oldResult || oldResult.score === 0 || oldResult.score === null) {
         await db
           .insert(quizResultsTable)
           .values({
@@ -57,7 +60,7 @@ export const resultsRouter = {
 
         await db
           .update(usersTable)
-          .set({ totalScore: sql`${usersTable.totalScore} + ${input.score}` })
+          .set({ totalScore: sql`${usersTable.totalScore || 0} + ${input.score}` })
           .where(eq(usersTable.id, ctx.userId));
 
         return;
@@ -82,7 +85,7 @@ export const resultsRouter = {
 
         await db
           .update(usersTable)
-          .set({ totalScore: sql`${usersTable.totalScore} + ${scoreDifference}` })
+          .set({ totalScore: (user?.totalScore || 0) + scoreDifference })
           .where(eq(usersTable.id, ctx.userId));
 
         return;
