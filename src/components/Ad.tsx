@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useSnapshot } from "valtio";
 import { setIsSubscribed, store } from "~/store";
 import { useTRPC } from "~/trpc/init/react";
+import { Heart } from "./Icons/Heart";
 
 export const Ad = () => {
   const { isSubscribed } = useSnapshot(store);
@@ -118,7 +119,6 @@ export const Ad = () => {
                   </p>
                 </motion.div>
 
-                {/* Heart Icons */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -137,16 +137,7 @@ export const Ad = () => {
                       }}
                       className="relative h-9 w-10"
                     >
-                      <svg
-                        width="40.5"
-                        height="34.34"
-                        viewBox="0 0 40.5 34.34"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M0 0H40.5V34.34H0V0Z" fill="#D82E2E" />
-                        <circle cx="35.59" cy="9.51" r="2.41" fill="white" />
-                      </svg>
+                      <Heart />
                     </motion.div>
                   ))}
                 </motion.div>
