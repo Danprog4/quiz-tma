@@ -45,14 +45,14 @@ async function createNews(conversation: Conversation, ctx: Context) {
   }
 }
 
-bot.use(createConversation(createNews, "createNews"));
+bot.use(createConversation(createNews, "create_news"));
 
-bot.command("createNews", async (ctx) => {
+bot.command("create_news", async (ctx) => {
   if (!getIsAdmin(Number(ctx.from?.id))) {
     ctx.reply("У тебя нет доступа к этому боту");
     return;
   }
-  await ctx.conversation.enter("createNews");
+  await ctx.conversation.enter("create_news");
 });
 
 async function createQuiz(conversation: Conversation, ctx: Context) {
