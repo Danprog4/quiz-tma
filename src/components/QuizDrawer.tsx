@@ -188,13 +188,6 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
 
   return (
     <div>
-      <div className="pointer-events-none fixed inset-0 z-10">
-        <img
-          src="/telek.png"
-          alt="Decorative overlay"
-          className="h-full w-full object-cover opacity-35"
-        />
-      </div>
       <AnimatePresence mode="wait" initial={false}>
         {isFinished ? (
           /* Finish Screen */
