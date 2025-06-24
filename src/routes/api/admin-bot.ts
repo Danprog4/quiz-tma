@@ -45,6 +45,48 @@ async function createNews(conversation: Conversation, ctx: Context) {
   }
 }
 
+async function deleteNews(conversation: Conversation, ctx: Context) {
+  if (!getIsAdmin(Number(ctx.from?.id))) {
+    ctx.reply("У тебя нет доступа к этому боту");
+    return;
+  }
+
+  await ctx.reply("Введите ID или название новости, которую хотите удалить:");
+
+  let news;
+  while (true) {
+    const { message } = await conversation.waitFor("message:text");
+    const response = message.text.toLowerCase().trim();
+
+    const idAsNumber = parseInt(response);
+    const isValidId = !isNaN(idAsNumber);
+
+    news = await db.query.newsTable.findFirst({
+      where: isValidId ? eq(newsTable.id, idAsNumber) : eq(newsTable.text, response),
+    });
+
+    if (!news) {
+      await ctx.reply("Новость не найдена, попробуйте ввести ID или название еще раз");
+      continue;
+    } else {
+      break;
+    }
+  }
+
+  await db.delete(newsTable).where(eq(newsTable.id, news.id));
+  await ctx.reply("Новость удалена");
+}
+
+bot.use(createConversation(deleteNews, "delete_news"));
+
+bot.command("delete_news", async (ctx) => {
+  if (!getIsAdmin(Number(ctx.from?.id))) {
+    ctx.reply("У тебя нет доступа к этому боту");
+    return;
+  }
+  await ctx.conversation.enter("delete_news");
+});
+
 bot.use(createConversation(createNews, "create_news"));
 
 bot.command("create_news", async (ctx) => {
