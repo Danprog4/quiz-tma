@@ -482,52 +482,69 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                     {renderMediaContent()}
 
                     <div className="mt-6 space-y-2">
-                      {currentQuestion?.answers.map((answer, index) => {
-                        const isSelected = selectedAnswer === answer.id;
-                        const isSubmitted = answerSubmitted;
+                      {currentQuestion?.answers ? (
+                        currentQuestion.answers.map((answer, index) => {
+                          const isSelected = selectedAnswer === answer.id;
+                          const isSubmitted = answerSubmitted;
 
-                        let bgColor = "bg-gray-200 hover:bg-gray-300";
-                        let textColor = "text-black";
-                        let border = "";
+                          let bgColor = "bg-gray-200 hover:bg-gray-300";
+                          let textColor = "text-black";
+                          let border = "";
 
-                        if (isSubmitted && isSelected) {
-                          if (answer.isCorrect) {
-                            bgColor = "bg-[#25CE16]";
-                            border = "border-2 border-[#25CE16]";
-                          } else {
-                            bgColor = "bg-[#E2302A]";
-                            border = "border-2 border-red-500";
-                          }
-                        } else if (isSelected) {
-                          bgColor = "bg-blue-200";
-                          textColor = "text-blue-900";
-                        }
-
-                        return (
-                          <motion.button
-                            key={answer.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{
-                              delay: 0.3 + index * 0.1,
-                              duration: 0.3,
-                              ease: "easeOut",
-                            }}
-                            onClick={() =>
-                              !answerSubmitted && setSelectedAnswer(answer.id)
+                          if (isSubmitted && isSelected) {
+                            if (answer.isCorrect) {
+                              bgColor = "bg-[#25CE16]";
+                              border = "border-2 border-[#25CE16]";
+                            } else {
+                              bgColor = "bg-[#E2302A]";
+                              border = "border-2 border-red-500";
                             }
-                            style={{
-                              borderTop: "3.5px solid white",
-                              borderLeft: "3.5px solid white",
-                              borderRight: "3.5px solid #293133",
-                              borderBottom: "3.5px solid #293133",
-                            }}
-                            className={`flex w-full justify-center px-4 py-3 text-lg ${bgColor} ${border} ${textColor} transition-colors`}
-                          >
-                            {answer.text}
-                          </motion.button>
-                        );
-                      })}
+                          } else if (isSelected) {
+                            bgColor = "bg-blue-200";
+                            textColor = "text-blue-900";
+                          }
+
+                          return (
+                            <motion.button
+                              key={answer.id}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{
+                                delay: 0.3 + index * 0.1,
+                                duration: 0.3,
+                                ease: "easeOut",
+                              }}
+                              onClick={() =>
+                                !answerSubmitted && setSelectedAnswer(answer.id)
+                              }
+                              style={{
+                                borderTop: "3.5px solid white",
+                                borderLeft: "3.5px solid white",
+                                borderRight: "3.5px solid #293133",
+                                borderBottom: "3.5px solid #293133",
+                              }}
+                              className={`flex w-full justify-center px-4 py-3 text-lg ${bgColor} ${border} ${textColor} transition-colors`}
+                            >
+                              {answer.text}
+                            </motion.button>
+                          );
+                        })
+                      ) : (
+                        <motion.button
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            delay: 0.5,
+                            duration: 0.3,
+                            ease: "easeOut",
+                          }}
+                          onClick={goToNextQuestion}
+                          disabled={selectedAnswer === null}
+                          className={`my-2 mt-6 w-full py-3.5 text-lg font-medium transition-colors ${selectedAnswer !== null ? "bg-[#0100BE] text-white hover:bg-blue-900" : "cursor-not-allowed bg-gray-400 text-white"}`}
+                        >
+                          Дальше
+                        </motion.button>
+                      )}
                     </div>
 
                     {answerSubmitted && selectedAnswer !== null && !isCorrect && (
@@ -569,7 +586,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
                         className="my-2 mt-6 w-full bg-[#0100BE] py-3.5 text-lg font-medium text-white hover:bg-blue-900"
                       >
                         {currentQuestionIndex < (questions?.length || 0) - 1
-                          ? "Далее"
+                          ? "Дальше"
                           : "Завершить квиз"}
                       </motion.button>
                     )}

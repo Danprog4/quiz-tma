@@ -62,11 +62,11 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
   }
 
   await ctx.reply(
-    "Введите данные квиза в формате: название, категория, описание, ссылка на изображение, популярный (true/false), новый (true/false), максимальный балл, имя коллаборатора, логотип коллаборатора, ссылка коллаборатора",
+    "Введите данные квиза в формате: название; категория; описание; ссылка на изображение; популярный (true/false); новый (true/false); максимальный балл; имя коллаборатора; логотип коллаборатора; ссылка коллаборатора",
   );
 
   const { message } = await conversation.waitFor("message:text");
-  const parts = message.text.split(",");
+  const parts = message.text.split(";");
 
   if (parts.length < 7) {
     await ctx.reply("Неверный формат. Попробуйте снова.");
@@ -114,7 +114,7 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
   let questionCount = 0;
   while (true) {
     await ctx.reply(
-      `Создай вопрос #${questionCount + 1} для квиза "${title}". В формате: вопрос, тип презентации (text/photo/video/audio), ссылка на медиа (или пустое), объяснение, баллы`,
+      `Создай вопрос #${questionCount + 1} для квиза "${title}". В формате: вопрос; тип презентации (text/photo/video/audio); ссылка на медиа (или пустое); объяснение; баллы`,
     );
 
     let questionMessage;
@@ -124,14 +124,14 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
     while (true) {
       const response = await conversation.waitFor("message:text");
       questionMessage = response.message;
-      questionParts = questionMessage.text.split(",");
+      questionParts = questionMessage.text.split(";");
 
       if (questionParts.length >= 5) {
         break;
       }
 
       await ctx.reply(
-        "Неверный формат вопроса. Попробуйте снова. Формат: вопрос, тип презентации (text/photo/video/audio), ссылка на медиа (или пустое), объяснение, баллы",
+        "Неверный формат вопроса. Попробуйте снова. Формат: вопрос; тип презентации (text/photo/video/audio); ссылка на медиа (или пустое); объяснение; баллы",
       );
     }
 
@@ -150,8 +150,13 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
     let answerCount = 0;
     while (true) {
       await ctx.reply(
-        `Создай ответ #${answerCount + 1} для вопроса "${questionText}". В формате: текст ответа, правильный (true/false)`,
+        `Создай ответ #${answerCount + 1} для вопроса "${questionText}". В формате: текст ответа; правильный (true/false). Напиши "нет" если хочешь закончить создание вопроса`,
       );
+
+      const { message: response } = await conversation.waitFor("message:text");
+      if (response.text.toLowerCase() === "нет") {
+        break;
+      }
 
       let answerMessage;
       let answerParts;
@@ -160,14 +165,14 @@ async function createQuiz(conversation: Conversation, ctx: Context) {
       while (true) {
         const response = await conversation.waitFor("message:text");
         answerMessage = response.message;
-        answerParts = answerMessage.text.split(",");
+        answerParts = answerMessage.text.split(";");
 
         if (answerParts.length >= 2) {
           break;
         }
 
         await ctx.reply(
-          "Неверный формат ответа. Попробуйте снова. Формат: текст ответа, правильный (true/false)",
+          "Неверный формат ответа. Попробуйте снова. Формат: текст ответа; правильный (true/false)",
         );
       }
 
