@@ -30,7 +30,7 @@ async function createNews(conversation: Conversation, ctx: Context) {
   }
 
   await ctx.reply(
-    "Введите текст новости, ссылку и ссылку на изображение. Формат: блаблабла; ссылка; ссылка",
+    "Введите текст новости, ссылку на ресурс и ссылку на изображение. Формат: блаблабла; ссылка; ссылка",
   );
 
   const { message } = await conversation.waitFor("message:text");
