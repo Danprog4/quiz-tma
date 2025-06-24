@@ -611,7 +611,7 @@ export function QuizDrawer({ quizId, onClose }: QuizDrawerProps) {
               ease: "easeInOut",
               filter: { duration: 0.3 },
             }}
-            className="h-full min-h-screen w-full bg-[#212121] pb-32 text-white"
+            className="h-full w-full pb-32 text-white"
           >
             <main className="mx-4 flex flex-col pt-8">
               <section>
