@@ -30,12 +30,12 @@ async function createNews(conversation: Conversation, ctx: Context) {
   }
 
   await ctx.reply(
-    "Введите текст новости, ссылку и ссылку на изображение. Формат: блаблабла,ссылка,ссылка",
+    "Введите текст новости, ссылку и ссылку на изображение. Формат: блаблабла; ссылка; ссылка",
   );
 
   const { message } = await conversation.waitFor("message:text");
   console.log(message);
-  const [text, link, imageUrl] = message.text.split(",");
+  const [text, link, imageUrl] = message.text.split(";").map((item) => item.trim());
   try {
     await db.insert(newsTable).values({ text, link, imageUrl });
     await ctx.reply("Новость создана успешно");
